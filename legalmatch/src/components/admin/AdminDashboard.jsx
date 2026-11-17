@@ -179,7 +179,7 @@ export default function AdminDashboard({ currentUser, onSignOut }) {
   return (
     <div style={{ minHeight: "100vh", background: BG }}>
       <nav style={{ height: "52px", background: NAVY, color: "white", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px" }}>
-        <div style={{ fontSize: "14px", fontWeight: 700 }}>LegalMatch Admin</div>
+        <div style={{ fontSize: "14px", fontWeight: 700 }}>WakiliMatch Admin</div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <span style={{ fontSize: "12px", opacity: 0.8 }}>{currentUser?.email}</span>
           <button onClick={onSignOut} style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.35)", color: "white", borderRadius: "6px", padding: "4px 10px", cursor: "pointer" }}>

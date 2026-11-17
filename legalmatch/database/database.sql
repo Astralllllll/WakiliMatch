@@ -1,6 +1,6 @@
 -- ============================================================
--- LegalMatch — Database Schema
--- PostgreSQL schema for the LegalMatch platform: client/lawyer/admin
+-- WakiliMatch — Database Schema
+-- PostgreSQL schema for the WakiliMatch platform: client/lawyer/admin
 -- accounts, lawyer profiles, client issues, TF-IDF-based matches,
 -- and post-engagement reviews.
 -- ============================================================

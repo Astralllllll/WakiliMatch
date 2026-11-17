@@ -192,7 +192,7 @@ function Logo() {
           />
         </svg>
       </div>
-      <span style={{ fontWeight: 600, fontSize: "15px", color: NAVY }}>LegalMatch</span>
+      <span style={{ fontWeight: 600, fontSize: "15px", color: NAVY }}>WakiliMatch</span>
     </div>
   );
 }

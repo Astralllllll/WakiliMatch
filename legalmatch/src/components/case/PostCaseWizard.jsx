@@ -496,7 +496,7 @@ export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
               </svg>
             </div>
             <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744", letterSpacing: "-.3px" }}>
-              LegalMatch
+              WakiliMatch
             </span>
           </div>
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#0F2744", marginBottom: "6px" }}>

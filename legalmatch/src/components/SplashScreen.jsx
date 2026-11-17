@@ -38,7 +38,7 @@ export default function SplashScreen({ onFinish }) {
     >
       <img
         src={logo}
-        alt="LegalMatch"
+        alt="WakiliMatch"
         style={{
           width: "220px",
           height: "220px",
@@ -48,7 +48,7 @@ export default function SplashScreen({ onFinish }) {
         }}
       />
       <p style={{ margin: 0, fontSize: "19px", fontWeight: 700, color: NAVY, letterSpacing: ".01em" }}>
-        LegalMatch
+        WakiliMatch
       </p>
       <p style={{ margin: 0, fontSize: "12px", color: TEXT_MUTED }}>
         Connecting clients with the right lawyer

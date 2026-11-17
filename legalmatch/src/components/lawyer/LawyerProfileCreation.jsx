@@ -305,7 +305,7 @@ export default function LawyerProfileCreation({ onSaveSuccess }) {
                   fill="white" fillOpacity=".9" />
               </svg>
             </div>
-            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744" }}>LegalMatch</span>
+            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744" }}>WakiliMatch</span>
           </div>
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#0F2744", margin: "0 0 6px" }}>
             Build your profile

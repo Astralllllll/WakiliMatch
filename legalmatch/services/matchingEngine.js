@@ -1,7 +1,7 @@
 /**
  * services/matchingEngine.js
  *
- * Core matching decision logic, built against the actual LegalMatch schema:
+ * Core matching decision logic, built against the actual WakiliMatch schema:
  *   - LawyerProfiles: full_name, biography, specializations (comma-separated),
  *     years_of_experience, is_verified
  *   - PastCases: lawyer_id, case_type, jurisdiction, case_year, outcome_note

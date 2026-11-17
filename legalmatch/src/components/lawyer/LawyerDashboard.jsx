@@ -725,7 +725,7 @@ export default function LawyerDashboard({ currentUser, onEditProfile, onSignOut 
               <path d="M9 2L3 6v4c0 3.5 2.5 6.5 6 7.5C13.5 16.5 16 13.5 16 10V6L9 2z" fill="white" fillOpacity=".9" />
             </svg>
           </div>
-          <span style={{ color: "white", fontWeight: 600, fontSize: "14px" }}>LegalMatch</span>
+          <span style={{ color: "white", fontWeight: 600, fontSize: "14px" }}>WakiliMatch</span>
         </div>
 
         <button

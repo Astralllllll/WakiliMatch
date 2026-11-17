@@ -71,7 +71,7 @@ export default function RoleSelect({ onSelect }) {
       <div className="w-full max-w-2xl flex flex-col items-center">
         <img
           src={logo}
-          alt="LegalMatch"
+          alt="WakiliMatch"
           className="w-14 h-14 rounded-2xl object-cover mb-5"
           style={{ boxShadow: "0 8px 20px rgba(15, 39, 68, 0.15)" }}
         />

@@ -98,7 +98,7 @@ export default function AuthLayout({ role, activePortal, onBack, onSwitchToClien
             </svg>
           </div>
           <span className="text-white font-semibold text-lg tracking-tight">
-            LegalMatch
+            WakiliMatch
           </span>
         </div>
 
@@ -153,7 +153,7 @@ export default function AuthLayout({ role, activePortal, onBack, onSwitchToClien
             </svg>
           </div>
           <span className="font-semibold text-base" style={{ color: "#0F2744" }}>
-            LegalMatch
+            WakiliMatch
           </span>
         </div>
 

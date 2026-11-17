@@ -414,7 +414,7 @@ export default function MatchResults({ onPostNewCase, onBackToClientDashboard })
                 <path d="M9 2L3 6v4c0 3.5 2.5 6.5 6 7.5C13.5 16.5 16 13.5 16 10V6L9 2z" fill="white" fillOpacity=".9" />
               </svg>
             </div>
-            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744" }}>LegalMatch</span>
+            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744" }}>WakiliMatch</span>
           </div>
 
           <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#0F2744", marginBottom: "6px" }}>
