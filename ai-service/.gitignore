@@ -1,0 +1,10 @@
+# Large, regenerable index files - see README for how to rebuild.
+artifacts/*.parquet
+artifacts/*.npy
+artifacts/engine_meta.json
+artifacts/ner_labelling_sample.csv
+
+.venv/
+__pycache__/
+*.pyc
+.env
