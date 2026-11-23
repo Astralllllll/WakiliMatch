@@ -1,0 +1,49 @@
+com.wakilimatch.app-activity-compose-1.10.0-0 C:\Users\lenny\.gradle\caches\8.9\transforms\02aaac5cdd5093561c32ed84262b2562\transformed\activity-compose-1.10.0\res
+com.wakilimatch.app-emoji2-1.3.0-1 C:\Users\lenny\.gradle\caches\8.9\transforms\084e2a4d40c89fe5abf21786bb094112\transformed\emoji2-1.3.0\res
+com.wakilimatch.app-profileinstaller-1.4.0-2 C:\Users\lenny\.gradle\caches\8.9\transforms\087fa9f1aa1e83ee13c16b5a1ba0ef5c\transformed\profileinstaller-1.4.0\res
+com.wakilimatch.app-annotation-experimental-1.4.1-3 C:\Users\lenny\.gradle\caches\8.9\transforms\141d99ecb32d6eea21593c157e942f01\transformed\annotation-experimental-1.4.1\res
+com.wakilimatch.app-material3-release-4 C:\Users\lenny\.gradle\caches\8.9\transforms\1723d3602b5243325293ff7011ed1ada\transformed\material3-release\res
+com.wakilimatch.app-ui-text-release-5 C:\Users\lenny\.gradle\caches\8.9\transforms\2025707edbac6652473c7d720ad40a0a\transformed\ui-text-release\res
+com.wakilimatch.app-core-runtime-2.2.0-6 C:\Users\lenny\.gradle\caches\8.9\transforms\29c8f361e22e66a4abe201cac5e15a66\transformed\core-runtime-2.2.0\res
+com.wakilimatch.app-lifecycle-viewmodel-savedstate-2.8.7-7 C:\Users\lenny\.gradle\caches\8.9\transforms\3b49735bfa33a98ee17056f5ffc6f28a\transformed\lifecycle-viewmodel-savedstate-2.8.7\res
+com.wakilimatch.app-ui-geometry-release-8 C:\Users\lenny\.gradle\caches\8.9\transforms\3b81cf02918d8959ab356579cfc6aa8b\transformed\ui-geometry-release\res
+com.wakilimatch.app-lifecycle-viewmodel-ktx-2.8.7-9 C:\Users\lenny\.gradle\caches\8.9\transforms\57b3290056d3cfd3769b3314a4578f90\transformed\lifecycle-viewmodel-ktx-2.8.7\res
+com.wakilimatch.app-animation-release-10 C:\Users\lenny\.gradle\caches\8.9\transforms\582989d57e0d0e5b11a464b8d55713f6\transformed\animation-release\res
+com.wakilimatch.app-lifecycle-process-2.8.7-11 C:\Users\lenny\.gradle\caches\8.9\transforms\5c8efd661c21e2fa52ef722669d4d6e2\transformed\lifecycle-process-2.8.7\res
+com.wakilimatch.app-ui-tooling-data-release-12 C:\Users\lenny\.gradle\caches\8.9\transforms\6441a7581c1e3ee8e769a3c2e71bddef\transformed\ui-tooling-data-release\res
+com.wakilimatch.app-activity-ktx-1.10.0-13 C:\Users\lenny\.gradle\caches\8.9\transforms\6be651f935c14245f4f825e3d4c06bae\transformed\activity-ktx-1.10.0\res
+com.wakilimatch.app-core-1.15.0-14 C:\Users\lenny\.gradle\caches\8.9\transforms\7422d1f4b9d531d1cca9927f6f20a4d7\transformed\core-1.15.0\res
+com.wakilimatch.app-lifecycle-livedata-core-2.8.7-15 C:\Users\lenny\.gradle\caches\8.9\transforms\7cb14d0efecf47f623af2cbf85490da3\transformed\lifecycle-livedata-core-2.8.7\res
+com.wakilimatch.app-foundation-layout-release-16 C:\Users\lenny\.gradle\caches\8.9\transforms\828f8417709093a9353366bb16bb7857\transformed\foundation-layout-release\res
+com.wakilimatch.app-lifecycle-viewmodel-release-17 C:\Users\lenny\.gradle\caches\8.9\transforms\83ef6aa17b4d47a989d46c08e7217a70\transformed\lifecycle-viewmodel-release\res
+com.wakilimatch.app-startup-runtime-1.1.1-18 C:\Users\lenny\.gradle\caches\8.9\transforms\851c3fe456ac50c54c4e67d2c4d7ab72\transformed\startup-runtime-1.1.1\res
+com.wakilimatch.app-lifecycle-runtime-release-19 C:\Users\lenny\.gradle\caches\8.9\transforms\88a49f5a6906cf5d127be6d9c03d480f\transformed\lifecycle-runtime-release\res
+com.wakilimatch.app-savedstate-ktx-1.2.1-20 C:\Users\lenny\.gradle\caches\8.9\transforms\91122b78c99db4952c8408e25f042715\transformed\savedstate-ktx-1.2.1\res
+com.wakilimatch.app-core-ktx-1.15.0-21 C:\Users\lenny\.gradle\caches\8.9\transforms\9952fa2498f9eac2cc61eeee7292a2ea\transformed\core-ktx-1.15.0\res
+com.wakilimatch.app-ui-release-22 C:\Users\lenny\.gradle\caches\8.9\transforms\9ceab7cd707586cc1b40409dac91ec1d\transformed\ui-release\res
+com.wakilimatch.app-customview-poolingcontainer-1.0.0-23 C:\Users\lenny\.gradle\caches\8.9\transforms\9f6955ffab23fa1afe70a1b6a153bda0\transformed\customview-poolingcontainer-1.0.0\res
+com.wakilimatch.app-foundation-release-24 C:\Users\lenny\.gradle\caches\8.9\transforms\ad665a3fac619d3f04b779b6dde72d78\transformed\foundation-release\res
+com.wakilimatch.app-material-ripple-release-25 C:\Users\lenny\.gradle\caches\8.9\transforms\adbadfb3a1dd40acd751ce9cf0ab43e7\transformed\material-ripple-release\res
+com.wakilimatch.app-material-release-26 C:\Users\lenny\.gradle\caches\8.9\transforms\add1af0061fbe43066e3514907951fa9\transformed\material-release\res
+com.wakilimatch.app-savedstate-1.2.1-27 C:\Users\lenny\.gradle\caches\8.9\transforms\ae516588616b32ef0ce1a30af364bb8d\transformed\savedstate-1.2.1\res
+com.wakilimatch.app-material-icons-core-release-28 C:\Users\lenny\.gradle\caches\8.9\transforms\aff805f9de6b1536c65551b486be47ab\transformed\material-icons-core-release\res
+com.wakilimatch.app-runtime-release-29 C:\Users\lenny\.gradle\caches\8.9\transforms\b007b0a18d43f84110c474ef9d89aa9f\transformed\runtime-release\res
+com.wakilimatch.app-tracing-1.2.0-30 C:\Users\lenny\.gradle\caches\8.9\transforms\be439539ca2990443e94c4049a643275\transformed\tracing-1.2.0\res
+com.wakilimatch.app-activity-1.10.0-31 C:\Users\lenny\.gradle\caches\8.9\transforms\c08f9eb9d279627e99984230f7ba77aa\transformed\activity-1.10.0\res
+com.wakilimatch.app-ui-tooling-preview-release-32 C:\Users\lenny\.gradle\caches\8.9\transforms\c6b96df4f9304b500535a000f33f9cdd\transformed\ui-tooling-preview-release\res
+com.wakilimatch.app-runtime-saveable-release-33 C:\Users\lenny\.gradle\caches\8.9\transforms\ccbd02f2e6e759240aaa49f81e407d40\transformed\runtime-saveable-release\res
+com.wakilimatch.app-animation-core-release-34 C:\Users\lenny\.gradle\caches\8.9\transforms\cdf8753873b596d824510c5610321f73\transformed\animation-core-release\res
+com.wakilimatch.app-ui-graphics-release-35 C:\Users\lenny\.gradle\caches\8.9\transforms\d6cea246c4261136080df08f11478a43\transformed\ui-graphics-release\res
+com.wakilimatch.app-ui-tooling-release-36 C:\Users\lenny\.gradle\caches\8.9\transforms\de14dff93f59fcbb9eb8e2ed7943f45e\transformed\ui-tooling-release\res
+com.wakilimatch.app-lifecycle-runtime-compose-release-37 C:\Users\lenny\.gradle\caches\8.9\transforms\eb6bfeae5b99d165a28484756b13c0fc\transformed\lifecycle-runtime-compose-release\res
+com.wakilimatch.app-ui-util-release-38 C:\Users\lenny\.gradle\caches\8.9\transforms\f11afc7a4348908eba0880b937c7abbc\transformed\ui-util-release\res
+com.wakilimatch.app-ui-unit-release-39 C:\Users\lenny\.gradle\caches\8.9\transforms\f74b26d7a7b0cb34f13fed69cb7c0535\transformed\ui-unit-release\res
+com.wakilimatch.app-lifecycle-runtime-ktx-release-40 C:\Users\lenny\.gradle\caches\8.9\transforms\f9cbbfd2e28431086c0f84b4e1f543cc\transformed\lifecycle-runtime-ktx-release\res
+com.wakilimatch.app-graphics-path-1.0.1-41 C:\Users\lenny\.gradle\caches\8.9\transforms\fe65dcf9133d0e68864f3b83bb8e04c4\transformed\graphics-path-1.0.1\res
+com.wakilimatch.app-pngs-42 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\build\generated\res\pngs\debug
+com.wakilimatch.app-resValues-43 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\build\generated\res\resValues\debug
+com.wakilimatch.app-packageDebugResources-44 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\build\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.wakilimatch.app-packageDebugResources-45 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\build\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.wakilimatch.app-debug-46 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\build\intermediates\merged_res\debug\mergeDebugResources
+com.wakilimatch.app-debug-47 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\src\debug\res
+com.wakilimatch.app-main-48 C:\Users\lenny\OneDrive\Documents\3rd YE\CS project\WakiliMatch\app\src\main\res

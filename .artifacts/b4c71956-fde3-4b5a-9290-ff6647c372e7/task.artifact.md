@@ -1,0 +1,5 @@
+- [x] Clarify preferred mobile architecture with user (Option 2: Native Kotlin & Jetpack Compose chosen)
+- [x] Set up mobile project structure and Gradle build files for Jetpack Compose
+- [x] Implement Retrofit data layer & data models connecting to Node.js backend
+- [x] Build Jetpack Compose screens & MainActivity connecting to Node.js backend
+- [/] Build and test the Android application on emulator/device
