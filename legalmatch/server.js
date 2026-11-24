@@ -122,8 +122,9 @@ app.post("/api/auth/client/register", async (req, res) => {
 
 app.post("/api/auth/client/login", async (req, res) => {
   const { email, password } = req.body || {};
+  const cleanEmail = (email || "").trim().toLowerCase();
 
-  if (!isEmail(email)) {
+  if (!isEmail(cleanEmail)) {
     return res.status(400).json({ field: "email", error: "Enter a valid email address." });
   }
   if (!password) {
@@ -135,12 +136,20 @@ app.post("/api/auth/client/login", async (req, res) => {
       `SELECT user_id, email, password_hash, role, full_name
        FROM Users
        WHERE email = $1`,
-      [email.trim().toLowerCase()]
+      [cleanEmail]
     );
 
     const user = userResult.rows[0];
-    if (!user || normalizeRole(user.role) !== "client" || !verifyPassword(password, user.password_hash)) {
-      return res.status(401).json({ field: "password", error: "Invalid email or password." });
+    if (!user) {
+      return res.status(401).json({ field: "email", error: "No account found with this email address." });
+    }
+
+    if (normalizeRole(user.role) !== "client") {
+      return res.status(400).json({ field: "role", error: `This account is registered as a ${user.role}. Please switch to the ${user.role} tab above.` });
+    }
+
+    if (!verifyPassword(password, user.password_hash)) {
+      return res.status(401).json({ field: "password", error: "Incorrect password." });
     }
 
     return res.json({
@@ -248,8 +257,16 @@ app.post("/api/auth/lawyer/login", async (req, res) => {
     );
 
     const user = userResult.rows[0];
-    if (!user || normalizeRole(user.role) !== "lawyer" || !verifyPassword(password, user.password_hash)) {
-      return res.status(401).json({ field: "password", error: "Invalid credentials." });
+    if (!user) {
+      return res.status(401).json({ field: "identifier", error: "No lawyer account found with this email or LSK number." });
+    }
+
+    if (normalizeRole(user.role) !== "lawyer") {
+      return res.status(400).json({ field: "role", error: `This account is registered as a ${user.role}. Please switch to the ${user.role} tab above.` });
+    }
+
+    if (!verifyPassword(password, user.password_hash)) {
+      return res.status(401).json({ field: "password", error: "Incorrect password." });
     }
 
     return res.json({
@@ -368,8 +385,8 @@ app.use((err, _req, res, next) => {
 // Start the server
 ensureUsersSchema()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Backend server is running on http://localhost:${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`Backend server is running on http://0.0.0.0:${PORT}`);
     });
   })
   .catch((err) => {

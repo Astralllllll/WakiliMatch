@@ -16,6 +16,9 @@ import os
 import sys
 from pathlib import Path
 
+import certifi
+os.environ["SSL_CERT_FILE"] = certifi.where()
+
 import numpy as np
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, HTTPException, Request

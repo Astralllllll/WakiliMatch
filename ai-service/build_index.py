@@ -19,9 +19,13 @@ sentence-transformer weights, both cached afterwards).
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
+
+import certifi
+os.environ["SSL_CERT_FILE"] = certifi.where()
 
 import numpy as np
 import pandas as pd

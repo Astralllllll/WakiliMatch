@@ -1,6 +1,6 @@
 import express from 'express';
 import pool from '../db.js';
-import { matchLawyersToCase } from '../services/matchingEngine.js';
+import { generateMatchesForIssue } from '../services/aiMatchingClient.js';
 
 const router = express.Router();
 
@@ -635,9 +635,19 @@ router.post('/generate', async (req, res) => {
       pastCases: row.past_cases || [],
     }));
 
-    // 3. Run the TF-IDF matching engine (replaces the dummy vector + pgvector query)
-    const ranked = matchLawyersToCase(clientIssue, lawyerProfiles);
-    const topMatches = ranked.slice(0, 5); // keep top 5, same as Jeremy's original LIMIT
+    // 3. Run the AI / TF-IDF matching engine
+    const aiOutput = await generateMatchesForIssue(clientIssue, lawyerProfiles);
+    if (aiOutput.no_good_match || aiOutput.unsupported_language) {
+      return res.status(200).json({
+        message: aiOutput.message,
+        matches: [],
+        no_good_match: aiOutput.no_good_match,
+        unsupported_language: aiOutput.unsupported_language,
+      });
+    }
+
+    const ranked = aiOutput.matches;
+    const topMatches = ranked.slice(0, 5); // keep top 5
 
     if (topMatches.length === 0) {
       return res.status(200).json({ message: 'No suitable lawyers found.', matches: [] });

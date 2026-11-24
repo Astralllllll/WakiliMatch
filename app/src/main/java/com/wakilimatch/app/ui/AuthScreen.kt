@@ -162,21 +162,26 @@ fun AuthScreen(
                     onClick = {
                         errorMessage = null
                         isLoading = true
+                        val trimmedIdentifier = emailOrIdentifier.trim()
+                        val trimmedFullName = fullName.trim()
+                        val trimmedLsk = lskNumber.trim()
+                        val trimmedPhone = phone.trim()
+
                         coroutineScope.launch {
                             try {
                                 val user = withContext(Dispatchers.IO) {
                                     if (isLogin) {
                                         if (selectedRole == "Client") {
-                                            val resp = apiService.loginClient(LoginRequest(emailOrIdentifier, password))
+                                            val resp = apiService.loginClient(LoginRequest(trimmedIdentifier, password))
                                             if (resp.isSuccessful && resp.body()?.user != null) {
                                                 resp.body()!!.user!!
                                             } else {
                                                 val errorText = resp.errorBody()?.string()
                                                 val parsed = try { Gson().fromJson(errorText, AuthResponse::class.java) } catch (e: Exception) { null }
-                                                throw Exception(parsed?.error ?: "Invalid credentials.")
+                                                throw Exception(parsed?.error ?: "Invalid email or password.")
                                             }
                                         } else {
-                                            val resp = apiService.loginLawyer(LawyerLoginRequest(emailOrIdentifier, password))
+                                            val resp = apiService.loginLawyer(LawyerLoginRequest(trimmedIdentifier, password))
                                             if (resp.isSuccessful && resp.body()?.user != null) {
                                                 resp.body()!!.user!!
                                             } else {
@@ -188,7 +193,7 @@ fun AuthScreen(
                                     } else {
                                         if (selectedRole == "Client") {
                                             val resp = apiService.registerClient(
-                                                RegisterClientRequest(fullName, emailOrIdentifier, phone.ifBlank { null }, password)
+                                                RegisterClientRequest(trimmedFullName, trimmedIdentifier, trimmedPhone.ifBlank { null }, password)
                                             )
                                             if (resp.isSuccessful && resp.body()?.user != null) {
                                                 resp.body()!!.user!!
@@ -199,7 +204,7 @@ fun AuthScreen(
                                             }
                                         } else {
                                             val resp = apiService.registerLawyer(
-                                                RegisterLawyerRequest(fullName, lskNumber, emailOrIdentifier, phone.ifBlank { null }, password)
+                                                RegisterLawyerRequest(trimmedFullName, trimmedLsk, trimmedIdentifier, trimmedPhone.ifBlank { null }, password)
                                             )
                                             if (resp.isSuccessful && resp.body()?.user != null) {
                                                 resp.body()!!.user!!

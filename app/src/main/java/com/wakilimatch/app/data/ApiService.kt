@@ -7,6 +7,9 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
+
 
 interface ApiService {
     @GET("api/health")
@@ -35,11 +38,18 @@ interface ApiService {
 
     companion object {
         fun create(): ApiService {
+            val client = OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .build()
+
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:5000/")
+                .baseUrl("http://192.168.100.3:5000/")
+                .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
             return retrofit.create(ApiService::class.java)
         }
     }
 }
+

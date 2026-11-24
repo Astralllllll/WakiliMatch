@@ -9,8 +9,12 @@ Writes eval/RESULTS.md.
 """
 
 import json
+import os
 import sys
 from pathlib import Path
+
+import certifi
+os.environ["SSL_CERT_FILE"] = certifi.where()
 
 import numpy as np
 import pandas as pd
