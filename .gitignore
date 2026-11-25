@@ -1,0 +1,22 @@
+# Gradle / Android build output
+.gradle/
+build/
+app/build/
+*.apk
+*.ap_
+*.dex
+*.class
+
+# Local configuration (machine-specific, never shared)
+local.properties
+*.iml
+
+# Android Studio / IntelliJ
+.idea/
+
+# Kotlin incremental compilation cache
+.kotlin/
+
+# OS
+.DS_Store
+Thumbs.db
