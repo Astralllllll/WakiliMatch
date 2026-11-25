@@ -4,9 +4,12 @@ import { loginAdmin } from "./authApi";
 import { FormField, PasswordInput, SubmitButton, TextInput } from "./FormComponents";
 
 export default function AdminAuth({ onSwitchToClient, onSwitchToLawyer, onBack, onAuthSuccess }) {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "", code: "" });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  // Generic failure message shared across every field - never reveals which
+  // of email/password/code was wrong (brief section 3).
+  const [formError, setFormError] = useState("");
 
   const set = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
@@ -15,6 +18,7 @@ export default function AdminAuth({ onSwitchToClient, onSwitchToLawyer, onBack, 
     if (!form.email) errs.email = "Email is required.";
     else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = "Enter a valid email address.";
     if (!form.password) errs.password = "Password is required.";
+    if (!form.code) errs.code = "Access code is required.";
     return errs;
   };
 
@@ -28,20 +32,21 @@ export default function AdminAuth({ onSwitchToClient, onSwitchToLawyer, onBack, 
 
     setLoading(true);
     setErrors({});
+    setFormError("");
 
     try {
-      const result = await loginAdmin({ email: form.email, password: form.password });
+      const result = await loginAdmin({ email: form.email, password: form.password, code: form.code });
       if (!result.ok) {
-        setErrors({ password: result.error });
+        setFormError(result.error || "Invalid credentials.");
         setLoading(false);
         return;
       }
 
       setLoading(false);
-      onAuthSuccess?.(result.user);
+      onAuthSuccess?.(result.user, { adminSessionToken: result.adminSessionToken });
     } catch {
       setLoading(false);
-      setErrors({ password: "Unable to reach server. Please try again." });
+      setFormError("Unable to reach server. Please try again.");
     }
   };
 
@@ -85,6 +90,20 @@ export default function AdminAuth({ onSwitchToClient, onSwitchToLawyer, onBack, 
               hasError={!!errors.password}
             />
           </FormField>
+
+          <FormField label="Access code" id="admin-code" error={errors.code}>
+            <PasswordInput
+              id="admin-code"
+              placeholder="Secret access code"
+              value={form.code}
+              onChange={set("code")}
+              hasError={!!errors.code}
+            />
+          </FormField>
+
+          {formError && (
+            <p className="text-xs text-center" style={{ color: "#DC2626" }}>{formError}</p>
+          )}
 
           <SubmitButton loading={loading}>Sign in as admin</SubmitButton>
         </form>

@@ -10,7 +10,7 @@ import LawyerReviewPage from "./components/client/LawyerReviewPage";
 import AdminDashboard from "./components/admin/AdminDashboard";
 import LawyerList from './components/LawyerList';
 import SplashScreen from "./components/SplashScreen";
-import { getLawyerProfile } from "./components/auth/authApi";
+import { getLawyerProfile, setAdminSessionToken } from "./components/auth/authApi";
 import { CaseProvider } from "./context/CaseContext";
 import { useCaseContext } from "./context/CaseContext";
 import { getClientCases, getIssueMatches } from "./components/case/caseApi";
@@ -63,6 +63,7 @@ function AppShell() {
             setCurrentUser(user || null);
 
             if (user?.role?.toLowerCase() === "admin") {
+              setAdminSessionToken(meta?.adminSessionToken);
               setPage("admin-dashboard");
               return;
             }
