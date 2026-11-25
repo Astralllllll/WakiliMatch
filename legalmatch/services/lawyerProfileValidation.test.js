@@ -43,8 +43,10 @@ describe("validateLawyerProfilePayload", () => {
   });
 
   it("does not require county or languages (web's existing onboarding never sends county)", () => {
-    const { county, languages, ...rest } = VALID_PAYLOAD;
-    const errors = validateLawyerProfilePayload(rest);
+    const payloadWithoutCountyOrLanguages = { ...VALID_PAYLOAD };
+    delete payloadWithoutCountyOrLanguages.county;
+    delete payloadWithoutCountyOrLanguages.languages;
+    const errors = validateLawyerProfilePayload(payloadWithoutCountyOrLanguages);
     expect(errors.county).toBeUndefined();
     expect(errors.languages).toBeUndefined();
   });
@@ -65,8 +67,9 @@ describe("validateLawyerProfilePayload", () => {
   });
 
   it("rejects a missing years_of_experience", () => {
-    const { years_of_experience, ...rest } = VALID_PAYLOAD;
-    const errors = validateLawyerProfilePayload(rest);
+    const payloadWithoutYears = { ...VALID_PAYLOAD };
+    delete payloadWithoutYears.years_of_experience;
+    const errors = validateLawyerProfilePayload(payloadWithoutYears);
     expect(errors.years_of_experience).toBeTruthy();
   });
 });

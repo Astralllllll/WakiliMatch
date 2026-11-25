@@ -1,9 +1,24 @@
 import express from 'express';
 import pool from '../db.js';
+import { getAdminSessionUser } from '../services/adminAuth.js';
 
 const router = express.Router();
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+// Deliverable 4, bug 3: every route below used to have zero auth - anyone
+// who knew the URL could call it. Every admin route now requires a valid,
+// unexpired admin session token (X-Admin-Session), issued only by
+// POST /api/auth/admin/login after the email+password+code check.
+router.use(async (req, res, next) => {
+  const token = req.get('X-Admin-Session');
+  const admin = await getAdminSessionUser(token).catch(() => null);
+  if (!admin) {
+    return res.status(403).json({ error: 'Admin session required.' });
+  }
+  req.adminUserId = admin.userId;
+  next();
+});
 
 router.get('/overview', async (_req, res) => {
   try {

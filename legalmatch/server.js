@@ -1,4 +1,7 @@
 import crypto from "crypto";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import pool from "./db.js";
@@ -8,38 +11,24 @@ import matchRoutes from "./routes/matches.js";
 import adminRoutes from "./routes/admin.js";
 import lawyerRoutes from "./routes/lawyers.js";
 import aiRoutes from "./routes/ai.js";
+import { hashPassword, verifyPassword } from "./services/passwordHash.js";
+import {
+  getRecentFailureCounts,
+  isAdminLoginRateLimited,
+  recordAdminLoginAttempt,
+  createAdminSession,
+} from "./services/adminAuth.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// .env.local holds ADMIN_ACCESS_CODE_HASH (scripts/generate-admin-code.js) -
+// never committed (.gitignore already excludes *.local). Loaded after the
+// default dotenv.config() picks up .env, explicitly, so this doesn't depend
+// on whichever dotenv-loading behavior the invoking shell happens to have.
+dotenv.config();
+dotenv.config({ path: path.join(__dirname, ".env.local"), override: false });
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
-
-const HASH_KEY_LENGTH = 64;
-const HASH_COST = 14;
-const HASH_SEPARATOR = ":";
-
-function hashPassword(password) {
-  const salt = crypto.randomBytes(16).toString("hex");
-  const derived = crypto.scryptSync(password, salt, HASH_KEY_LENGTH, { N: 2 ** HASH_COST }).toString("hex");
-  return `${salt}${HASH_SEPARATOR}${derived}`;
-}
-
-function verifyPassword(password, stored) {
-  try {
-    if (!stored || !stored.includes(HASH_SEPARATOR)) {
-      return false;
-    }
-
-    const [salt, originalHash] = stored.split(HASH_SEPARATOR);
-    const hashBuffer = Buffer.from(originalHash, "hex");
-    if (!salt || hashBuffer.length === 0) {
-      return false;
-    }
-
-    const candidateHash = crypto.scryptSync(password, salt, hashBuffer.length, { N: 2 ** HASH_COST });
-    return crypto.timingSafeEqual(hashBuffer, candidateHash);
-  } catch {
-    return false;
-  }
-}
 
 function isEmail(value) {
   return /\S+@\S+\.\S+/.test(value || "");
@@ -286,29 +275,51 @@ app.post("/api/auth/lawyer/login", async (req, res) => {
   }
 });
 
-app.post("/api/auth/admin/login", async (req, res) => {
-  const { email, password } = req.body || {};
+// Admin sign-in requires email + password + a secret access code (brief
+// section 3 / bug 3) - not a standalone login, an extra factor on top of
+// this same route. Every failure (wrong email, wrong password, wrong code,
+// rate-limited) returns the exact same generic message and status, so a
+// caller can never tell which part was wrong or whether the account exists.
+const GENERIC_ADMIN_LOGIN_ERROR = { error: "Invalid credentials." };
 
-  if (!isEmail(email)) {
-    return res.status(400).json({ field: "email", error: "Enter a valid email address." });
-  }
-  if (!password) {
-    return res.status(400).json({ field: "password", error: "Password is required." });
+app.post("/api/auth/admin/login", async (req, res) => {
+  const { email, password, code } = req.body || {};
+  const ip = req.ip || req.socket?.remoteAddress || "unknown";
+  const normalizedEmail = (email || "").trim().toLowerCase();
+
+  if (!isEmail(email) || !password || !code) {
+    // Still logged, so a flood of malformed requests counts toward the
+    // same per-IP lockout as real credential guesses.
+    await recordAdminLoginAttempt({ email: normalizedEmail, ip, success: false }).catch(() => {});
+    return res.status(401).json(GENERIC_ADMIN_LOGIN_ERROR);
   }
 
   try {
-    const userResult = await pool.query(
-      `SELECT user_id, email, password_hash, role
-       FROM Users
-       WHERE email = $1
-       LIMIT 1`,
-      [email.trim().toLowerCase()]
-    );
-
-    const user = userResult.rows[0];
-    if (!user || normalizeRole(user.role) !== "admin" || !verifyPassword(password, user.password_hash)) {
-      return res.status(401).json({ field: "password", error: "Invalid admin credentials." });
+    const { emailFailureCount, ipFailureCount } = await getRecentFailureCounts(normalizedEmail, ip);
+    if (isAdminLoginRateLimited({ emailFailureCount, ipFailureCount })) {
+      await recordAdminLoginAttempt({ email: normalizedEmail, ip, success: false }).catch(() => {});
+      return res.status(401).json(GENERIC_ADMIN_LOGIN_ERROR);
     }
+
+    const codeHash = process.env.ADMIN_ACCESS_CODE_HASH;
+    // Fail closed: with no code configured, every admin login fails rather
+    // than silently skipping the code check.
+    const codeOk = Boolean(codeHash) && verifyPassword(code, codeHash);
+
+    const userResult = await pool.query(
+      `SELECT user_id, email, password_hash, role FROM Users WHERE email = $1 LIMIT 1`,
+      [normalizedEmail]
+    );
+    const user = userResult.rows[0];
+    const passwordOk = Boolean(user) && normalizeRole(user.role) === "admin" && verifyPassword(password, user.password_hash);
+
+    if (!codeOk || !passwordOk) {
+      await recordAdminLoginAttempt({ email: normalizedEmail, ip, success: false }).catch(() => {});
+      return res.status(401).json(GENERIC_ADMIN_LOGIN_ERROR);
+    }
+
+    await recordAdminLoginAttempt({ email: normalizedEmail, ip, success: true });
+    const session = await createAdminSession(user.user_id);
 
     return res.json({
       user: {
@@ -316,6 +327,8 @@ app.post("/api/auth/admin/login", async (req, res) => {
         email: user.email,
         role: user.role,
       },
+      adminSessionToken: session.token,
+      adminSessionExpiresAt: session.expiresAt,
     });
   } catch (err) {
     console.error("Admin login failed:", err.message);
