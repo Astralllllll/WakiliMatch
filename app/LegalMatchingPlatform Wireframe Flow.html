@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LegalMatchingPlatform — Wireframe Flow</title>
+<style>
+  :root{
+    --navy:#1B2A4A; --navy-deep:#121D33; --ice:#EDF2FA; --gold:#C9A227;
+    --slate:#5B6B85; --white:#FFFFFF; --border:#DCE3EF; --border-strong:#C7D0E3;
+    --ink:#1B2A4A; --body:#33404E;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--navy-deep);
+    background-image:radial-gradient(circle at 15% 10%, #1f2f52 0%, var(--navy-deep) 45%);
+    color:var(--white);
+    min-height:100%;
+    display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 48px;
+  }
+  header{width:100%; max-width:1000px; text-align:center; margin-bottom:6px;}
+  header h1{font-size:20px; margin:0 0 4px; font-weight:600; letter-spacing:.2px;}
+  header p{font-size:12.5px; color:#AAB6CC; margin:0;}
+
+  .tabs{display:flex; gap:8px; margin:20px 0 6px; background:rgba(255,255,255,.06); padding:4px; border-radius:10px;}
+  .tab{border:none; background:transparent; color:#C6D0E4; font-size:13px; font-weight:600; padding:8px 18px; border-radius:8px; cursor:pointer; transition:background .15s,color .15s;}
+  .tab.active{background:var(--gold); color:var(--navy-deep);}
+  .tab:not(.active):hover{background:rgba(255,255,255,.08); color:#fff;}
+
+  .track{display:flex; align-items:center; gap:6px; margin:14px 0 26px; flex-wrap:wrap; justify-content:center; max-width:700px;}
+  .node{display:flex; align-items:center; gap:6px; cursor:pointer; padding:5px 10px; border-radius:16px; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.04);}
+  .node.current{background:var(--gold); border-color:var(--gold);}
+  .node.current .dot{background:var(--navy-deep);}
+  .node .dot{width:6px;height:6px;border-radius:50%;background:#7A88A3;}
+  .node span{font-size:11px; color:#C6D0E4; font-weight:500; white-space:nowrap;}
+  .node.current span{color:var(--navy-deep); font-weight:700;}
+  .arrow{color:#5B6B85; font-size:12px;}
+
+  .stage{display:flex; flex-direction:column; align-items:center;}
+  .phone{width:300px; border:3px solid var(--navy); border-radius:34px; padding:8px; background:var(--white); box-shadow:0 20px 50px rgba(0,0,0,.45);}
+  .notch{width:90px; height:16px; background:var(--navy); border-radius:0 0 12px 12px; margin:0 auto 0;}
+  .screen{border-radius:24px; overflow:hidden; background:var(--white); color:var(--ink); min-height:560px; display:flex; flex-direction:column;}
+  .status{display:flex; justify-content:space-between; padding:8px 16px 0; font-size:11px; color:var(--slate);}
+  .titlebar{background:var(--navy); color:var(--white); display:flex; align-items:center; justify-content:space-between; padding:10px 12px; font-size:12px; font-weight:700; letter-spacing:.4px; margin-top:6px;}
+  .titlebar .chip{font-size:10.5px; font-weight:600; cursor:pointer; opacity:.9;}
+  .titlebar .chip:hover{opacity:1; text-decoration:underline;}
+  .titlebar .mid{flex:1; text-align:center;}
+  .body{padding:16px; flex:1; display:flex; flex-direction:column;}
+
+  .avatar{width:60px; height:60px; border-radius:50%; border:1.5px solid var(--navy); display:flex; align-items:center; justify-content:center; margin:18px auto 10px; font-weight:700; font-size:13px; color:var(--navy);}
+  .brand{text-align:center; font-weight:700; font-size:15px; margin-bottom:2px;}
+  .brand-sub{text-align:center; font-size:12px; color:var(--slate); margin-bottom:20px;}
+  .field{border:1px solid var(--border-strong); border-radius:8px; padding:10px 12px; font-size:12.5px; color:var(--slate); margin-bottom:12px;}
+  .link{color:var(--gold); font-size:12px; text-decoration:none; cursor:pointer;}
+  .link:hover{text-decoration:underline;}
+  .btn{background:var(--navy); color:var(--white); text-align:center; padding:12px; border-radius:8px; font-size:12.5px; font-weight:700; cursor:pointer; border:none; width:100%; letter-spacing:.3px;}
+  .btn:hover{background:var(--navy-deep);}
+  .btn-outline{background:var(--white); color:var(--navy); border:1px solid var(--border-strong);}
+  .foot-link{text-align:center; font-size:11.5px; color:var(--slate); margin-top:14px;}
+
+  .greet{font-size:12px; color:var(--slate);}
+  .name{font-size:16px; font-weight:700; margin-bottom:14px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .tile{border:1px solid var(--border-strong); border-radius:10px; padding:18px 6px; text-align:center; font-size:11.5px; font-weight:700; color:var(--navy); cursor:pointer; position:relative; background:var(--white);}
+  .tile:hover{border-color:var(--navy); background:var(--ice);}
+  .tile.dim{cursor:default; color:var(--slate); opacity:.55;}
+  .tile.dim:hover{border-color:var(--border-strong); background:var(--white);}
+  .badge-count{position:absolute; top:-6px; right:-6px; background:var(--navy); color:#fff; font-size:9.5px; font-weight:700; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center;}
+  .tile-dark{background:var(--navy); color:#fff;}
+
+  .steps{display:flex; align-items:center; justify-content:center; gap:4px; margin-bottom:16px; font-size:10px; color:var(--border-strong);}
+  .step-dot{width:20px; height:20px; border-radius:50%; border:1.5px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-size:9.5px; color:var(--slate); font-weight:700;}
+  .step-dot.done{background:var(--navy); border-color:var(--navy); color:#fff;}
+  .step-dot.now{border-color:var(--gold); color:var(--gold);}
+  .step-line{width:16px; height:1px; background:var(--border-strong);}
+  .label{font-size:10.5px; font-weight:700; color:var(--navy); margin-bottom:5px; letter-spacing:.2px;}
+  .pillgrid{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:14px;}
+  .pill{border:1px solid var(--border-strong); border-radius:6px; padding:8px 4px; text-align:center; font-size:10px; font-weight:600; color:var(--navy); cursor:pointer;}
+  .pill.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+  textarea.field{resize:none; font-family:inherit; height:64px;}
+  .note{font-size:10.5px; color:var(--slate); border:1px dashed var(--border-strong); border-radius:6px; padding:8px 10px; margin:6px 0 14px;}
+
+  .case-card{border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:10px; cursor:pointer;}
+  .case-card:hover{border-color:var(--navy);}
+  .case-card .top{display:flex; justify-content:space-between; align-items:center; font-size:12.5px; font-weight:700;}
+  .score{color:var(--gold);}
+  .tagrow{display:flex; gap:5px; margin:6px 0; flex-wrap:wrap;}
+  .tag{font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px; background:var(--ice); color:var(--navy); border:1px solid var(--border);}
+  .tag.top{background:var(--navy); color:#fff; border:none;}
+  .tag.limited{background:#FBEFE0; color:#8A5A00; border:none;}
+  .case-desc{font-size:10.5px; color:var(--slate); line-height:1.5;}
+  .summary-box{background:var(--ice); border-radius:10px; padding:10px 12px; margin-bottom:12px;}
+  .summary-box .t1{font-size:11.5px; font-weight:700;}
+  .summary-box .t2{font-size:10.5px; color:var(--slate);}
+
+  .stats3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:14px 0;}
+  .stat{border:1px solid var(--border); border-radius:8px; text-align:center; padding:8px 2px;}
+  .stat b{display:block; font-size:15px; color:var(--navy);}
+  .stat span{font-size:9px; color:var(--slate);}
+  .history-item{display:flex; justify-content:space-between; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border); font-size:11px;}
+  .history-item .t{font-weight:600;}
+  .history-item .d{font-size:9.5px; color:var(--slate);}
+  .result-tag{font-size:9px; font-weight:700; padding:2px 6px; border-radius:4px;}
+  .result-tag.won{background:var(--navy); color:#fff;}
+  .result-tag.settled{background:var(--ice); color:var(--navy); border:1px solid var(--border);}
+  .result-tag.ongoing{background:#fff; color:var(--slate); border:1px dashed var(--border-strong);}
+
+  .stats-card{border:1px solid var(--border); border-radius:10px; padding:12px; margin-top:8px;}
+  .stats-card .h{font-size:11px; font-weight:700; margin-bottom:8px;}
+  .stats-card .row{display:flex; justify-content:space-between; font-size:11px; color:var(--slate); padding:4px 0;}
+  .stats-card .row b{color:var(--navy);}
+
+  /* AI feature styles */
+  .ai-badge{display:inline-flex; align-items:center; gap:3px; font-size:8.5px; font-weight:700; letter-spacing:.4px; padding:2px 6px; border-radius:10px; background:var(--gold); color:var(--navy-deep);}
+  .ai-badge.soft{background:var(--ice); color:var(--gold); border:1px solid var(--gold);}
+  .ai-note{font-size:9.5px; color:var(--gold); font-weight:600;}
+  .titlebar .ai-badge{margin-left:6px;}
+
+  .chat{flex:1; display:flex; flex-direction:column; gap:8px; overflow-y:auto; padding:4px 0 8px;}
+  .bubble{max-width:80%; font-size:11px; line-height:1.5; padding:9px 11px; border-radius:12px;}
+  .bubble.ai{align-self:flex-start; background:var(--ice); color:var(--ink); border-bottom-left-radius:3px;}
+  .bubble.me{align-self:flex-end; background:var(--navy); color:#fff; border-bottom-right-radius:3px;}
+  .bubble.draft{align-self:flex-start; background:#fff; border:1px dashed var(--gold); color:var(--ink); border-bottom-left-radius:3px;}
+  .chat-input{display:flex; align-items:center; border:1px solid var(--border-strong); border-radius:20px; padding:8px 12px; font-size:11px; color:var(--slate); margin:6px 0 10px;}
+
+  .viewfinder{border:2px dashed var(--border-strong); border-radius:12px; background:var(--ice); height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; color:var(--slate); font-size:10.5px; margin-bottom:12px;}
+  .viewfinder .cam{font-size:26px; opacity:.5;}
+  .extract-box{border:1px solid var(--gold); border-radius:10px; padding:11px 12px; margin-bottom:14px; background:#FFFDF5;}
+  .extract-box .eh{display:flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700; color:var(--navy); margin-bottom:8px;}
+  .extract-row{display:flex; justify-content:space-between; font-size:10.5px; padding:3px 0; color:var(--slate);}
+  .extract-row b{color:var(--navy); font-weight:600;}
+
+  .inquiry-card{border:1px solid var(--border); border-radius:10px; padding:11px 12px; margin-bottom:10px;}
+  .inquiry-card .ih{display:flex; justify-content:space-between; align-items:center; font-size:12px; font-weight:700; color:var(--navy);}
+  .inquiry-card .meta{font-size:9.5px; color:var(--slate); margin:2px 0 6px;}
+  .ai-summary{background:var(--ice); border-radius:8px; padding:8px 9px; font-size:10px; line-height:1.5; color:var(--body);}
+  .ai-summary .sh{display:flex; align-items:center; gap:5px; font-size:8.5px; font-weight:700; color:var(--gold); letter-spacing:.4px; margin-bottom:4px;}
+
+  .toast{position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--navy); color:#fff; padding:12px 22px; border-radius:10px; font-size:12.5px; font-weight:600; box-shadow:0 10px 30px rgba(0,0,0,.35); opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; z-index:50;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  .caption{margin-top:16px; text-align:center; font-size:11.5px; color:#8493AD;}
+  .caption b{color:#E7ECF6;}
+  footer{margin-top:34px; font-size:10.5px; color:#5B6B85; text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>LegalMatchingPlatform</h1>
+  <p>Interactive wireframe flow &nbsp;&#183;&nbsp; click through the client and lawyer journeys</p>
+</header>
+
+<div class="tabs">
+  <button class="tab" id="tabClient" onclick="startFlow('client')">Client Flow</button>
+  <button class="tab" id="tabLawyer" onclick="startFlow('lawyer')">Lawyer Flow</button>
+</div>
+
+<div class="track" id="track"></div>
+
+<div class="stage">
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="screen" id="screen"></div>
+  </div>
+  <div class="caption" id="caption"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>Tororey Jeremy Kigen (184821) &nbsp;&#183;&nbsp; Githui Lenny Kabia (189590) &nbsp;&#183;&nbsp; Supervisor: Dr Jecton Anyango</footer>
+
+<script>
+const clientOrder = [
+  ['client-login','Login'],
+  ['client-dashboard','Dashboard'],
+  ['ai-assistant','AI Intake'],
+  ['scan-document','Scan Doc'],
+  ['post-case-2','New Case'],
+  ['post-case-3','Case Details'],
+  ['match-results','Matches'],
+  ['lawyer-profile','Select Lawyer']
+];
+const lawyerOrder = [
+  ['lawyer-login','Login'],
+  ['lawyer-dashboard','Dashboard'],
+  ['lawyer-inquiries','Inquiries']
+];
+
+let history = [];
+let currentId = null;
+
+const screens = {
+
+'client-login': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" style="visibility:hidden">Back</span><span class="mid">LOGIN SCREEN</span><span class="chip" style="visibility:hidden">Save</span></div>
+  <div class="body">
+    <div class="avatar">LM</div>
+    <div class="brand">LegalMatch</div>
+    <div class="brand-sub">Client Portal</div>
+    <div class="field">Enter email address</div>
+    <div class="field">Enter password</div>
+    <div class="link" style="display:block;text-align:right;margin-bottom:20px">Forgot password?</div>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="go('client-dashboard')">SIGN IN</button>
+    <div class="foot-link">Don't have an account? <span class="link">Register</span></div>
+  </div>
+`,
+
+'client-dashboard': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="mid">CLIENT DASHBOARD</span></div>
+  <div class="body">
+    <div class="greet">Good afternoon</div>
+    <div class="name">John Kamau</div>
+    <div class="grid2">
+      <div class="tile dim" title="Not wired in this demo">MY CASES</div>
+      <div class="tile dim" title="Not wired in this demo">MY LAWYERS<span class="badge-count">2</span></div>
+      <div class="tile" onclick="go('ai-assistant')">NEW CASE</div>
+      <div class="tile dim" title="Not wired in this demo">MESSAGES<span class="badge-count">3</span></div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="grid2">
+      <div class="tile dim" title="Not wired in this demo">SETTINGS</div>
+      <div class="tile tile-dark" onclick="go('client-login')">LOG OUT</div>
+    </div>
+  </div>
+`,
+
+'ai-assistant': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">AI ASSISTANT <span class="ai-badge">NEW</span></span><span class="chip" onclick="go('scan-document')" title="Scan a document instead">Scan</span></div>
+  <div class="body">
+    <div class="chat">
+      <div class="bubble ai">Hi John, tell me what happened and I'll help structure your case.</div>
+      <div class="bubble me">Dismissed after 6 years, no warning.</div>
+      <div class="bubble ai">Sorry to hear that. When did this happen, and was any notice or severance given?</div>
+      <div class="bubble me">March 2024. No notice, benefits denied.</div>
+      <div class="bubble draft"><b>Drafted your case</b> as Employment Law, Nairobi, Urgent. Review before continuing?</div>
+    </div>
+    <div class="chat-input">Type your message&#8230;</div>
+    <button class="btn" onclick="go('post-case-2')">REVIEW &amp; CONTINUE &#8594;</button>
+  </div>
+`,
+
+'scan-document': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">SCAN DOCUMENT <span class="ai-badge">NEW</span></span><span class="chip" style="visibility:hidden">Save</span></div>
+  <div class="body">
+    <div class="viewfinder">
+      <div class="cam">&#128247;</div>
+      <div>Position document in frame</div>
+    </div>
+    <button class="btn btn-outline" onclick="showToast('Gallery not wired in this demo')" style="margin-bottom:14px">UPLOAD FROM GALLERY</button>
+    <div class="extract-box">
+      <div class="eh"><span class="ai-badge soft">&#10022; AI</span> EXTRACTED</div>
+      <div class="extract-row"><span>Type</span><b>Demand letter</b></div>
+      <div class="extract-row"><span>Response due</span><b>14 days</b></div>
+      <div class="extract-row"><span>Parties</span><b>Landlord vs tenant</b></div>
+      <div class="extract-row"><span>Suggested category</span><b>Property law</b></div>
+    </div>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="go('post-case-2')">USE THIS INFO &#8594;</button>
+  </div>
+`,
+
+'post-case-2': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">POST A CASE</span><span class="chip" title="Not wired in this demo">Save</span></div>
+  <div class="body">
+    <div class="steps">
+      <div class="step-dot done">&#10003;</div><div class="step-line"></div>
+      <div class="step-dot now">2</div><div class="step-line"></div>
+      <div class="step-dot">3</div><div class="step-line"></div>
+      <div class="step-dot">4</div>
+    </div>
+    <div class="label">SELECT LEGAL CATEGORY *</div>
+    <div class="pillgrid">
+      <div class="pill" onclick="pick(this)">Criminal</div>
+      <div class="pill active" onclick="pick(this)">Employment</div>
+      <div class="pill" onclick="pick(this)">Family</div>
+      <div class="pill" onclick="pick(this)">Corporate</div>
+      <div class="pill" onclick="pick(this)">Real Estate</div>
+      <div class="pill" onclick="pick(this)">Immigration</div>
+    </div>
+    <div class="label">CASE TITLE *</div>
+    <div class="field">Wrongful termination &#8212; ABC Ltd</div>
+    <div class="label">JURISDICTION *</div>
+    <div class="field">Nairobi</div>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="go('post-case-3')">CONTINUE &#8594;</button>
+  </div>
+`,
+
+'post-case-3': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">CASE DETAILS</span><span class="chip" title="Not wired in this demo">Save</span></div>
+  <div class="body">
+    <div class="steps">
+      <div class="step-dot done">&#10003;</div><div class="step-line"></div>
+      <div class="step-dot done">&#10003;</div><div class="step-line"></div>
+      <div class="step-dot now">3</div><div class="step-line"></div>
+      <div class="step-dot">4</div>
+    </div>
+    <div style="margin-bottom:8px"><span class="ai-badge">&#10022; AI-ASSISTED FROM CHAT</span></div>
+    <div class="label">CASE DESCRIPTION *</div>
+    <textarea class="field" readonly>Dismissed without cause after 6 years. Benefits denied. March 2024...</textarea>
+    <div class="label">URGENCY LEVEL * <span class="ai-note">&#183; AI suggested</span></div>
+    <div class="field">Urgent (within 30 days)</div>
+    <div class="label">BUDGET RANGE (KES)</div>
+    <div class="field">50,000 &#8211; 150,000</div>
+    <div class="note">Details hidden from lawyers until you select one</div>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="go('match-results')">FIND MATCHES &#8594;</button>
+  </div>
+`,
+
+'match-results': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">MATCH RESULTS</span><span class="chip" title="Not wired in this demo">Filter</span></div>
+  <div class="body">
+    <div class="summary-box">
+      <div class="t1">YOUR CASE</div>
+      <div class="t2">Wrongful Termination &#183; Nairobi &#183; Employment Law &#183; Urgent</div>
+    </div>
+    <div style="font-size:11px;color:var(--slate);margin-bottom:10px">14 lawyers ranked by <span class="ai-note">&#10022; AI semantic match</span></div>
+    <div class="case-card" onclick="go('lawyer-profile')">
+      <div class="top"><span>Mary Kamau, LLB</span><span class="score">94%</span></div>
+      <div class="tagrow"><span class="tag top">TOP MATCH</span><span class="tag">Nairobi</span><span class="tag">12 yrs</span></div>
+      <div class="case-desc">Case history closely mirrors yours &#8212; 7 similar cases, 5 won. Favours negotiated settlements.</div>
+    </div>
+    <div class="case-card" onclick="go('lawyer-profile')">
+      <div class="top"><span>James Otieno, LLM</span><span class="score">78%</span></div>
+      <div class="tagrow"><span class="tag">Nairobi</span><span class="tag">8 yrs</span></div>
+      <div class="case-desc">4 similar cases &#8212; specialises in employment disputes</div>
+    </div>
+    <div class="case-card" onclick="go('lawyer-profile')">
+      <div class="top"><span>Brenda Ndungu, LLB</span><span class="score" style="color:var(--slate)">41%</span></div>
+      <div class="tagrow"><span class="tag limited">LIMITED MATCH</span></div>
+      <div class="case-desc">No recorded employment cases &#8212; strong corporate background</div>
+    </div>
+  </div>
+`,
+
+'lawyer-profile': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">LAWYER PROFILE</span><span class="chip" title="Not wired in this demo">Select</span></div>
+  <div class="body" style="padding-top:8px">
+    <div class="avatar" style="margin-top:2px">MK</div>
+    <div class="brand">Mary Kamau, LLB LLM</div>
+    <div class="brand-sub" style="margin-bottom:8px">LSK #KE-2014-04421</div>
+    <div class="tagrow" style="justify-content:center;margin-bottom:10px">
+      <span class="tag">Employment</span><span class="tag">Nairobi</span><span class="tag">&#10003; LSK Verified</span>
+    </div>
+    <div class="stats3">
+      <div class="stat"><b>127</b><span>CASES</span></div>
+      <div class="stat"><b>12</b><span>YRS EXP</span></div>
+      <div class="stat"><b>4.8&#9733;</b><span>RATING</span></div>
+    </div>
+    <div class="label" style="margin-top:6px">CASE HISTORY</div>
+    <div class="history-item"><div><div class="t">Wrongful Termination &#183; Nairobi</div><div class="d">2023 &#183; Employee-side</div></div><span class="result-tag won">WON</span></div>
+    <div class="history-item"><div><div class="t">Unfair Dismissal</div><div class="d">2023 &#183; Nairobi</div></div><span class="result-tag settled">SETTLED</span></div>
+    <div class="history-item"><div><div class="t">Constructive Dismissal</div><div class="d">2022 &#183; Nairobi</div></div><span class="result-tag won">WON</span></div>
+    <div class="history-item" style="border-bottom:none"><div><div class="t">Redundancy &#183; Manufacturing</div><div class="d">2021 &#183; Mombasa</div></div><span class="result-tag ongoing">ONGOING</span></div>
+    <div style="flex:1"></div>
+    <div class="summary-box" style="margin-top:10px">
+      <div class="t1">Select Mary Kamau</div>
+      <div class="t2">She will receive your full case details and contact you within 24 hrs.</div>
+    </div>
+    <button class="btn" onclick="confirmSelection()">CONFIRM SELECTION</button>
+  </div>
+`,
+
+'lawyer-login': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="mid">LAWYER LOGIN</span></div>
+  <div class="body">
+    <div class="avatar">LM</div>
+    <div class="brand">LegalMatch</div>
+    <div class="brand-sub">Advocate Portal</div>
+    <div class="field">Enter LSK number / email</div>
+    <div class="field">Enter password</div>
+    <div class="link" style="display:block;text-align:right;margin-bottom:20px">Forgot password?</div>
+    <div style="flex:1"></div>
+    <button class="btn" onclick="go('lawyer-dashboard')">SIGN IN</button>
+    <div class="foot-link">New advocate? <span class="link">Register practice</span></div>
+  </div>
+`,
+
+'lawyer-dashboard': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="mid">LAWYER DASHBOARD</span></div>
+  <div class="body">
+    <div class="greet">Advocate Panel</div>
+    <div class="name">Mary Kamau</div>
+    <div class="grid2">
+      <div class="tile" onclick="go('lawyer-inquiries')">INQUIRIES<span class="badge-count">3</span></div>
+      <div class="tile dim" title="Not wired in this demo">PROFILE</div>
+      <div class="tile dim" title="Not wired in this demo">MY CASES</div>
+      <div class="tile dim" title="Not wired in this demo">REPORTS</div>
+    </div>
+    <div class="stats-card">
+      <div class="h">QUICK STATS</div>
+      <div class="row"><span>New inquiries</span><b>3</b></div>
+      <div class="row"><span>&#10022; AI summaries ready</span><b>3</b></div>
+      <div class="row"><span>Active cases</span><b>6</b></div>
+    </div>
+    <div style="flex:1"></div>
+    <div class="foot-link"><span class="link" onclick="go('lawyer-login')">Log out</span></div>
+  </div>
+`,
+
+'lawyer-inquiries': `
+  <div class="status"><span>9:41</span><span>&#8226;&#8226;&#8226;</span></div>
+  <div class="titlebar"><span class="chip" onclick="back()">&#8592; Back</span><span class="mid">INQUIRIES <span class="ai-badge">AI</span></span><span class="chip" title="Not wired in this demo">Filter</span></div>
+  <div class="body">
+    <div style="font-size:11px;color:var(--slate);margin-bottom:10px">3 new inquiries &#183; <span class="ai-note">AI summaries ready</span></div>
+    <div class="inquiry-card">
+      <div class="ih"><span>Wrongful Termination</span><span class="score">94%</span></div>
+      <div class="meta">Nairobi &#183; Employment &#183; Urgent</div>
+      <div class="ai-summary">
+        <div class="sh"><span class="ai-badge soft">&#10022; AI</span> SUMMARY</div>
+        Employee dismissed after 6 yrs, no notice, benefits denied (Mar 2024). Strong wrongful-termination claim; client seeks negotiated settlement.
+      </div>
+    </div>
+    <div class="inquiry-card">
+      <div class="ih"><span>Unpaid Salary Dispute</span><span class="score">81%</span></div>
+      <div class="meta">Nairobi &#183; Employment &#183; Standard</div>
+      <div class="ai-summary">
+        <div class="sh"><span class="ai-badge soft">&#10022; AI</span> SUMMARY</div>
+        3 months' salary withheld after resignation. Documentation attached; likely quick resolution via demand letter.
+      </div>
+    </div>
+    <div class="inquiry-card">
+      <div class="ih"><span>Contract Review</span><span class="score">67%</span></div>
+      <div class="meta">Mombasa &#183; Corporate &#183; Low</div>
+      <div class="ai-summary">
+        <div class="sh"><span class="ai-badge soft">&#10022; AI</span> SUMMARY</div>
+        New employment contract with non-compete clause. Client wants clauses assessed before signing.
+      </div>
+    </div>
+  </div>
+`
+};
+
+const titles = {
+  'client-login':'Client &#8226; Login','client-dashboard':'Client &#8226; Dashboard',
+  'ai-assistant':'Client &#8226; AI Assistant (Chat Intake)','scan-document':'Client &#8226; Scan Document',
+  'post-case-2':'Client &#8226; Post a Case (1/2)','post-case-3':'Client &#8226; Post a Case (2/2)',
+  'match-results':'Client &#8226; Match Results','lawyer-profile':'Client &#8226; Lawyer Profile',
+  'lawyer-login':'Lawyer &#8226; Login','lawyer-dashboard':'Lawyer &#8226; Dashboard',
+  'lawyer-inquiries':'Lawyer &#8226; Inquiries (AI Summaries)'
+};
+
+function flowFor(id){
+  if(clientOrder.some(n=>n[0]===id)) return 'client';
+  return 'lawyer';
+}
+
+function render(){
+  document.getElementById('screen').innerHTML = screens[currentId];
+  document.getElementById('caption').innerHTML = '<b>'+titles[currentId]+'</b>';
+  const flow = flowFor(currentId);
+  document.getElementById('tabClient').classList.toggle('active', flow==='client');
+  document.getElementById('tabLawyer').classList.toggle('active', flow==='lawyer');
+  renderTrack(flow);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderTrack(flow){
+  const order = flow==='client' ? clientOrder : lawyerOrder;
+  const track = document.getElementById('track');
+  track.innerHTML = '';
+  order.forEach((n,i)=>{
+    const node = document.createElement('div');
+    node.className = 'node' + (n[0]===currentId ? ' current' : '');
+    node.innerHTML = '<span class="dot"></span><span>'+n[1]+'</span>';
+    node.onclick = () => go(n[0]);
+    track.appendChild(node);
+    if(i < order.length-1){
+      const arrow = document.createElement('span');
+      arrow.className = 'arrow';
+      arrow.textContent = '\u2192';
+      track.appendChild(arrow);
+    }
+  });
+}
+
+function go(id){
+  if(currentId && currentId !== id) history.push(currentId);
+  currentId = id;
+  render();
+}
+
+function back(){
+  if(history.length){
+    currentId = history.pop();
+    render();
+  }
+}
+
+function startFlow(flow){
+  history = [];
+  currentId = flow==='client' ? 'client-login' : 'lawyer-login';
+  render();
+}
+
+function pick(el){
+  el.parentElement.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function confirmSelection(){
+  showToast('Selection confirmed \u2014 Mary Kamau will be in touch within 24 hrs');
+  setTimeout(()=>go('client-dashboard'), 550);
+}
+
+startFlow('client');
+</script>
+</body>
+</html>
