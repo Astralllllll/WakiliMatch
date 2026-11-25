@@ -21,8 +21,11 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from engine.advocate_cleanup import clean_advocates_by_doc
 from engine.embedder import Embedder
-from eval.queries import EVAL_QUERIES
+from eval.queries import EVAL_QUERIES, OFF_TOPIC
+
+THRESHOLD_SWEEP = [round(0.30 + 0.01 * i, 2) for i in range(11)]  # 0.30 .. 0.40
 
 ARTIFACTS_DIR = Path(__file__).resolve().parent.parent / "artifacts"
 SEED = 42
@@ -121,6 +124,79 @@ def run_grouped_cv(passages, passage_embeddings):
     }
 
 
+def run_threshold_sweep(embedder, passage_embeddings, passage_doc_ids, doc_area):
+    """For each candidate threshold in THRESHOLD_SWEEP, counts how many of the
+    35 labelled legal queries and how many of the 8 off-topic queries would
+    be rejected (top-1 cosine below that threshold). Rejecting a legal query
+    is a false negative (bad); rejecting an off-topic query is a true
+    negative (good) - see brief section A2. Does not change the live default,
+    which is still read from engine_meta.json only."""
+    present_areas = set(doc_area.values())
+    legal_queries = [q for q, area in EVAL_QUERIES if area in present_areas]
+
+    def top1(query):
+        q_emb = embedder.encode_one(query)
+        return float((passage_embeddings @ q_emb).max())
+
+    top1_legal = np.array([top1(q) for q in legal_queries])
+    top1_off = np.array([top1(q) for q in OFF_TOPIC])
+
+    rows = []
+    for t in THRESHOLD_SWEEP:
+        rows.append({
+            "threshold": t,
+            "legal_rejected": int((top1_legal < t).sum()),
+            "legal_total": len(top1_legal),
+            "off_topic_rejected": int((top1_off < t).sum()),
+            "off_topic_total": len(top1_off),
+        })
+    return pd.DataFrame(rows)
+
+
+def run_advocate_cleanup_report(meta: dict, meta_path: Path) -> dict:
+    """Reports extractor coverage and unique-advocate counts before/after
+    clean_advocates_by_doc() (brief section A5), and rewrites engine_meta.json
+    in place with the cleaned advocates_by_doc so the live /match endpoint
+    serves cleaned names/keys/ambiguous flags, not the raw extraction.
+    Idempotent: re-running on already-cleaned data reports before==after."""
+    raw_by_doc = meta["advocates_by_doc"]
+    n_docs = len(raw_by_doc)
+    n_docs_with_advocate = sum(1 for entries in raw_by_doc.values() if entries)
+    coverage = n_docs_with_advocate / n_docs if n_docs else 0.0
+
+    unique_before = {a["key"] for entries in raw_by_doc.values() for a in entries}
+    cleaned_by_doc = clean_advocates_by_doc(raw_by_doc)
+    unique_after = {a["key"] for entries in cleaned_by_doc.values() for a in entries}
+
+    meta["advocates_by_doc"] = cleaned_by_doc
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(meta, f, default=str)
+
+    return {
+        "n_docs": n_docs,
+        "n_docs_with_advocate": n_docs_with_advocate,
+        "coverage": coverage,
+        "unique_before": len(unique_before),
+        "unique_after": len(unique_after),
+    }
+
+
+def recommend_threshold(sweep: pd.DataFrame, calibrated: float) -> str:
+    """Picks, among thresholds that reject every off-topic query, the lowest
+    one (fewest legal queries wrongly rejected); falls back to the
+    calibrated Youden's J value if no threshold clears all off-topic
+    queries in this sample."""
+    clears_off_topic = sweep[sweep["off_topic_rejected"] == sweep["off_topic_total"]]
+    if clears_off_topic.empty:
+        return (f"No swept threshold rejects all {sweep['off_topic_total'].iloc[0]} off-topic queries in this "
+                f"sample; keeping the calibrated default ({calibrated:.3f}) until the off-topic set grows.")
+    best = clears_off_topic.sort_values(["legal_rejected", "threshold"]).iloc[0]
+    return (f"**{best['threshold']:.2f}** rejects all {int(best['off_topic_total'])} off-topic queries while "
+            f"wrongly rejecting only {int(best['legal_rejected'])}/{int(best['legal_total'])} legal queries - "
+            f"the calibrated default ({calibrated:.3f}) falls in the same band and is not being changed "
+            f"without approval, per the brief.")
+
+
 def main():
     passages, passage_embeddings, meta = load_artifacts()
     doc_area = meta["doc_areas"]
@@ -172,6 +248,37 @@ def main():
         lines.append(f"Naive (ungrouped) CV macro-F1: {cv['naive_mean']:.3f} "
                      f"(leakage would inflate the score by {cv['naive_mean'] - cv['grouped_mean']:+.3f})")
         lines.append(f"Chance level: ~{cv['chance_level']:.3f}")
+    lines.append("")
+
+    lines.append("## Threshold sweep (0.30-0.40, brief section A2)")
+    lines.append("")
+    lines.append(f"The live default is read from `engine_meta.json` only ({meta['threshold']:.3f}, "
+                 f"AUC {meta.get('threshold_auc', float('nan')):.3f}); this sweep is a report, not a change.")
+    lines.append("")
+    sweep = run_threshold_sweep(embedder, passage_embeddings, passage_doc_ids, doc_area)
+    lines.append("| Threshold | Legal queries rejected | Off-topic queries rejected |")
+    lines.append("|---|---|---|")
+    for row in sweep.itertuples():
+        marker = " **(calibrated default)**" if abs(row.threshold - meta["threshold"]) < 0.005 else ""
+        lines.append(f"| {row.threshold:.2f}{marker} | {row.legal_rejected}/{row.legal_total} "
+                     f"| {row.off_topic_rejected}/{row.off_topic_total} |")
+    lines.append("")
+    lines.append(recommend_threshold(sweep, meta["threshold"]))
+    lines.append("")
+
+    lines.append("## Advocate extraction coverage and cleanup (brief section A5)")
+    lines.append("")
+    adv = run_advocate_cleanup_report(meta, ARTIFACTS_DIR / "engine_meta.json")
+    lines.append(f"Extractor coverage: {adv['n_docs_with_advocate']:,}/{adv['n_docs']:,} documents "
+                 f"({adv['coverage']:.1%}) have at least one extracted appearance.")
+    lines.append("")
+    lines.append(f"Unique advocate keys before `clean_advocates_by_doc()`: **{adv['unique_before']:,}**")
+    lines.append(f"Unique advocate keys after: **{adv['unique_after']:,}** "
+                 f"({adv['unique_before'] - adv['unique_after']:,} collapsed as casing/fragment/near-duplicate-firm "
+                 "variants of an already-counted advocate)")
+    lines.append("")
+    lines.append("`engine_meta.json`'s `advocates_by_doc` has been rewritten in place with the cleaned "
+                 "names/keys/`ambiguous` flags above - the live `/match` endpoint now serves cleaned data.")
     lines.append("")
 
     out_path = Path(__file__).resolve().parent / "RESULTS.md"

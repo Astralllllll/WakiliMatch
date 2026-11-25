@@ -78,6 +78,10 @@ CREATE TABLE PastCases (
     jurisdiction VARCHAR(100) NOT NULL,
     case_year    INT          NOT NULL,
     outcome_note TEXT,
+    -- Structured result tag for the ResultTag UI chip (WON/SETTLED/ONGOING/...).
+    -- Nullable: existing rows and any lawyer who hasn't tagged a case stay valid;
+    -- the UI simply omits the tag until one is set (Deliverable 3 B5/B4).
+    outcome_tag  VARCHAR(20)  CHECK (outcome_tag IN ('won', 'settled', 'ongoing', 'lost', 'withdrawn')),
     created_at   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -105,6 +109,7 @@ CREATE TABLE ClientIssues (
     budget_max        NUMERIC(12,2),
     status            VARCHAR(50)   NOT NULL DEFAULT 'Open'
                           CHECK (status IN ('Open', 'Matched', 'Closed')),
+    ai_summary        TEXT,         -- AI-drafted case summary shown to lawyers pre-confirmation (Deliverable 3 B5/B6)
     created_at        TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

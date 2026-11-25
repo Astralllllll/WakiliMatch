@@ -637,12 +637,15 @@ router.post('/generate', async (req, res) => {
 
     // 3. Run the AI / TF-IDF matching engine
     const aiOutput = await generateMatchesForIssue(clientIssue, lawyerProfiles);
-    if (aiOutput.no_good_match || aiOutput.unsupported_language) {
+    if (aiOutput.status && aiOutput.status !== 'success') {
       return res.status(200).json({
         message: aiOutput.message,
         matches: [],
         no_good_match: aiOutput.no_good_match,
         unsupported_language: aiOutput.unsupported_language,
+        status: aiOutput.status,
+        example_queries: aiOutput.example_queries || [],
+        xai: aiOutput.xai || null,
       });
     }
 
@@ -672,6 +675,8 @@ router.post('/generate', async (req, res) => {
         years_of_experience: match.yearsOfExperience,
         match_reason: match.matchReason,
         warning: match.warning,
+        why: match.why || null,
+        component_scores: match.componentScores || null,
       });
     }
 
@@ -679,6 +684,8 @@ router.post('/generate', async (req, res) => {
     return res.status(200).json({
       message: 'Matches generated successfully',
       matches: savedMatches,
+      status: 'success',
+      xai: aiOutput.xai || null,
     });
   } catch (err) {
     console.error('Error generating matches:', err.message);

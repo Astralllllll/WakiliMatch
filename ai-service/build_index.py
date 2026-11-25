@@ -32,6 +32,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from engine.advocate_cleanup import clean_advocates_by_doc
 from engine.cleaning import CleaningLog, flatten_schema, normalize_and_dedupe, rebuild_documents
 from engine.config import DEFAULT_CONFIG
 from engine.embedder import Embedder
@@ -111,6 +112,10 @@ def main():
     ).to_dict()
     doc_urls = sample_docs.set_index("doc_id")["url"].to_dict()
     advocates_by_doc = sample_docs.set_index("doc_id")["advocates"].to_dict()
+    advocates_before = len({a["key"] for entries in advocates_by_doc.values() for a in entries})
+    advocates_by_doc = clean_advocates_by_doc(advocates_by_doc)
+    advocates_after = len({a["key"] for entries in advocates_by_doc.values() for a in entries})
+    print(f"      advocate cleanup: {advocates_before:,} unique raw keys -> {advocates_after:,} after clean_advocates_by_doc")
     print(f"      sample: {len(sample_docs):,} judgments -> {len(passages):,} passages")
     print(sample_docs["area"].value_counts().to_string())
 

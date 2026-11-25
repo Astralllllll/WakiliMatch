@@ -41,3 +41,32 @@ Best C: **10.0**
 Grouped CV macro-F1: **0.655 +/- 0.037**
 Naive (ungrouped) CV macro-F1: 0.802 (leakage would inflate the score by +0.147)
 Chance level: ~0.167
+
+## Threshold sweep (0.30-0.40, brief section A2)
+
+The live default is read from `engine_meta.json` only (0.328, AUC 0.943); this sweep is a report, not a change.
+
+| Threshold | Legal queries rejected | Off-topic queries rejected |
+|---|---|---|
+| 0.30 | 0/35 | 6/8 |
+| 0.31 | 0/35 | 6/8 |
+| 0.32 | 0/35 | 7/8 |
+| 0.33 **(calibrated default)** | 1/35 | 7/8 |
+| 0.34 | 1/35 | 7/8 |
+| 0.35 | 1/35 | 7/8 |
+| 0.36 | 1/35 | 7/8 |
+| 0.37 | 1/35 | 7/8 |
+| 0.38 | 1/35 | 7/8 |
+| 0.39 | 2/35 | 7/8 |
+| 0.40 | 2/35 | 7/8 |
+
+No swept threshold rejects all 8 off-topic queries in this sample; keeping the calibrated default (0.328) until the off-topic set grows.
+
+## Advocate extraction coverage and cleanup (brief section A5)
+
+Extractor coverage: 131/737 documents (17.8%) have at least one extracted appearance.
+
+Unique advocate keys before `clean_advocates_by_doc()`: **205**
+Unique advocate keys after: **193** (12 collapsed as casing/fragment/near-duplicate-firm variants of an already-counted advocate)
+
+`engine_meta.json`'s `advocates_by_doc` has been rewritten in place with the cleaned names/keys/`ambiguous` flags above - the live `/match` endpoint now serves cleaned data.

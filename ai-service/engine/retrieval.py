@@ -56,6 +56,7 @@ def rank_lawyers_for_cases(
             rows.append({
                 "lawyer": a["name"], "key": a["key"], "score": float(score),
                 "case": doc_titles.get(doc_id, doc_id), "doc_id": doc_id, "area": doc_areas.get(doc_id),
+                "ambiguous": a.get("ambiguous", False),
             })
     if not rows:
         return []
@@ -69,6 +70,7 @@ def rank_lawyers_for_cases(
             relevant_cases=("case", "nunique"),
             example_case=("case", "first"),
             areas=("area", lambda x: ", ".join(sorted(set(x.dropna())))),
+            ambiguous=("ambiguous", "first"),
         )
         .sort_values("match_score", ascending=False)
         .head(top_lawyers)
@@ -95,6 +97,7 @@ def rank_lawyers_for_cases(
             "example_case": row.example_case,
             "areas": row.areas,
             "evidence": evidence_by_key.get(row.key, []),
+            "ambiguous": bool(row.ambiguous),
         })
     return out
 
