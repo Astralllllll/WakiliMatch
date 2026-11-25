@@ -217,6 +217,7 @@ async function generateMatchesForIssue(clientIssue, lawyerProfiles) {
           fullName: lawyer.fullName,
           specializations: lawyer.specializations,
           yearsOfExperience: lawyer.yearsOfExperience,
+          previousCasesHandled: lawyer.previousCasesHandled,
           similarityScore: Number(finalScore.toFixed(4)),
           matchReason: reasons.join('; '),
           relevantCaseCount,

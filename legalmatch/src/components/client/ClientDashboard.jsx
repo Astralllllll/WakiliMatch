@@ -1,5 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { getClientCases } from "../case/caseApi";
+import { Screen, TitleBar } from "../ui/Screen";
+import { Button } from "../ui/Controls";
+import { Tile } from "../ui/Tiles";
 
 const STATUS_CONFIG = {
   pending: { label: "Pending", bg: "#EFF6FF", color: "#1D4ED8" },
@@ -10,241 +13,124 @@ const STATUS_CONFIG = {
 
 function formatDate(value) {
   if (!value) return "—";
-  return new Date(value).toLocaleDateString("en-KE", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return new Date(value).toLocaleDateString("en-KE", { year: "numeric", month: "short", day: "numeric" });
 }
 
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   return (
     <span
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        padding: "4px 10px",
-        borderRadius: "999px",
-        fontSize: "12px",
-        fontWeight: 600,
-        background: cfg.bg,
-        color: cfg.color,
-      }}
+      style={{ background: cfg.bg, color: cfg.color }}
+      className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold"
     >
       {cfg.label}
     </span>
   );
 }
 
-export default function ClientDashboard({ currentUser, onPostNewCase, onSelectDifferentLawyer, onCaseComplete, onSignOut }) {
+// ─── "My Cases" sub-view ────────────────────────────────────────────────────
+
+function MyCases({ onBack, currentUser, onSelectDifferentLawyer, onCaseComplete }) {
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let mounted = true;
-
-    async function load({ silent = false } = {}) {
+    async function load() {
       if (!currentUser?.id) {
-        if (mounted) {
-          setLoading(false);
-          setError("Unable to determine current user.");
-        }
+        if (mounted) { setLoading(false); setError("Unable to determine current user."); }
         return;
       }
-
-      if (!silent && mounted) {
-        setLoading(true);
-      }
-
       const result = await getClientCases(currentUser.id);
       if (!mounted) return;
-
-      if (result.ok) {
-        setError("");
-        setIssues(result.issues);
-      } else if (!silent) {
-        setError(result.error || "Unable to load your case details.");
-        setIssues([]);
-      }
-
-      if (!silent) {
-        setLoading(false);
-      }
+      if (result.ok) { setError(""); setIssues(result.issues); }
+      else { setError(result.error || "Unable to load your case details."); setIssues([]); }
+      setLoading(false);
     }
-
     load();
-
-    const intervalId = setInterval(() => {
-      load({ silent: true });
-    }, 15000);
-
-    const onFocus = () => load({ silent: true });
-    window.addEventListener("focus", onFocus);
-
-    return () => {
-      mounted = false;
-      clearInterval(intervalId);
-      window.removeEventListener("focus", onFocus);
-    };
+    return () => { mounted = false; };
   }, [currentUser?.id]);
 
-  const hasExistingCases = useMemo(() => issues.length > 0, [issues]);
-
   return (
-    <div style={{ minHeight: "100vh", background: "#F8FAFC", padding: "28px 16px" }}>
-      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", gap: "12px", flexWrap: "wrap" }}>
-          <div>
-            <p style={{ margin: 0, fontSize: "12px", color: "#94A3B8", fontWeight: 700, letterSpacing: ".06em", textTransform: "uppercase" }}>
-              Client profile
-            </p>
-            <h1 style={{ margin: "4px 0 0", fontSize: "24px", color: "#0F2744" }}>
-              Your case details and status
-            </h1>
-          </div>
-          <div style={{ display: "flex", gap: "8px" }}>
-            <button
-              onClick={onPostNewCase}
-              style={{
-                padding: "9px 14px",
-                borderRadius: "8px",
-                border: "none",
-                background: "#1D9E75",
-                color: "white",
-                fontSize: "13px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Post new case
-            </button>
-            <button
-              onClick={onSignOut}
-              style={{
-                padding: "9px 14px",
-                borderRadius: "8px",
-                border: "1px solid #CBD5E1",
-                background: "white",
-                color: "#0F2744",
-                fontSize: "13px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              Sign out
-            </button>
-          </div>
-        </div>
-
+    <Screen>
+      <TitleBar title="My Cases" onBack={onBack} />
+      <div className="p-4 flex-1 flex flex-col gap-3">
         {loading ? (
-          <div style={{ background: "white", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "24px", color: "#64748B" }}>
-            Loading your cases...
-          </div>
+          <p className="text-[13px] text-slate">Loading your cases…</p>
         ) : error ? (
-          <div style={{ background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: "12px", padding: "16px", color: "#B91C1C", fontSize: "13px" }}>
-            {error}
-          </div>
-        ) : !hasExistingCases ? (
-          <div style={{ background: "white", border: "1px solid #E2E8F0", borderRadius: "12px", padding: "24px" }}>
-            <p style={{ margin: 0, color: "#475569", fontSize: "14px" }}>
-              You have not posted any case details yet.
-            </p>
-          </div>
+          <p className="text-[12px] text-red-600">{error}</p>
+        ) : issues.length === 0 ? (
+          <p className="text-[13px] text-slate">You have not posted any case details yet.</p>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {issues.map((issue) => (
-              <div
-                key={issue.issue_id}
-                style={{
-                  background: "white",
-                  border: "1px solid #E2E8F0",
-                  borderRadius: "12px",
-                  padding: "18px",
-                }}
-              >
-                <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-                  <div>
-                    <p style={{ margin: 0, fontSize: "16px", color: "#0F2744", fontWeight: 700 }}>{issue.issue_title || "Untitled case"}</p>
-                    <p style={{ margin: "4px 0 0", fontSize: "12px", color: "#64748B" }}>
-                      Submitted {formatDate(issue.created_at)}
-                    </p>
-                  </div>
-                  <StatusBadge status={issue.match_status} />
+          issues.map((issue) => (
+            <div key={issue.issue_id} className="border border-border rounded-md p-3.5">
+              <div className="flex justify-between gap-2">
+                <div>
+                  <p className="text-[14px] font-bold text-navy m-0">{issue.issue_title || "Untitled case"}</p>
+                  <p className="text-[11px] text-slate m-0 mt-0.5">Submitted {formatDate(issue.created_at)}</p>
                 </div>
-
-                <p style={{ margin: "12px 0 0", fontSize: "13px", color: "#334155", lineHeight: 1.6 }}>
-                  {issue.issue_description || "No case description available."}
-                </p>
-
-                <div style={{ marginTop: "10px", display: "flex", gap: "14px", flexWrap: "wrap" }}>
-                  <span style={{ fontSize: "12px", color: "#64748B" }}>Category: {issue.legal_category || "—"}</span>
-                  <span style={{ fontSize: "12px", color: "#64748B" }}>Jurisdiction: {issue.jurisdiction || "—"}</span>
-                  <span style={{ fontSize: "12px", color: "#64748B" }}>Lawyer: {issue.lawyer_name || "Not assigned"}</span>
-                  {issue.match_status === "completed" && issue.review_created_at && (
-                    <span style={{ fontSize: "12px", color: "#64748B" }}>
-                      Reviewed on: {formatDate(issue.review_created_at)}
-                    </span>
-                  )}
-                </div>
-
-                <div style={{ marginTop: "14px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {issue.match_status === "accepted" ? (
-                    <button
-                      onClick={() => onCaseComplete(issue)}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        border: "none",
-                        background: "#1D9E75",
-                        color: "white",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Case complete
-                    </button>
-                  ) : issue.match_status === "completed" ? (
-                    <button
-                      onClick={() => onCaseComplete(issue)}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        border: "1px solid #CBD5E1",
-                        background: "white",
-                        color: "#0F2744",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
-                    >
-                      View/Edit review
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => onSelectDifferentLawyer(issue)}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        border: "1px solid #CBD5E1",
-                        background: "white",
-                        color: "#0F2744",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Select different lawyer
-                    </button>
-                  )}
-                </div>
+                <StatusBadge status={issue.match_status} />
               </div>
-            ))}
-          </div>
+              <p className="text-[12px] text-body mt-2 leading-relaxed">{issue.issue_description || "No case description available."}</p>
+              <div className="flex gap-3 flex-wrap mt-2 text-[11px] text-slate">
+                <span>Category: {issue.legal_category || "—"}</span>
+                <span>Lawyer: {issue.lawyer_name || "Not assigned"}</span>
+              </div>
+              <div className="mt-2.5">
+                {issue.match_status === "accepted" || issue.match_status === "completed" ? (
+                  <Button variant="outline" onClick={() => onCaseComplete(issue)}>
+                    {issue.match_status === "accepted" ? "Case complete" : "View/Edit review"}
+                  </Button>
+                ) : (
+                  <Button variant="outline" onClick={() => onSelectDifferentLawyer(issue)}>Select different lawyer</Button>
+                )}
+              </div>
+            </div>
+          ))
         )}
       </div>
-    </div>
+    </Screen>
+  );
+}
+
+// ─── Dashboard tile grid ────────────────────────────────────────────────────
+
+export default function ClientDashboard({ currentUser, onPostNewCase, onSelectDifferentLawyer, onCaseComplete, onSignOut }) {
+  const [view, setView] = useState("tiles");
+
+  if (view === "cases") {
+    return (
+      <MyCases
+        onBack={() => setView("tiles")}
+        currentUser={currentUser}
+        onSelectDifferentLawyer={onSelectDifferentLawyer}
+        onCaseComplete={onCaseComplete}
+      />
+    );
+  }
+
+  return (
+    <Screen>
+      <TitleBar title="Client Dashboard" />
+      <div className="p-4 flex-1 flex flex-col">
+        <p className="text-[12px] text-slate m-0">Good to see you</p>
+        <p className="text-[16px] font-bold text-navy mb-4">{currentUser?.fullName || currentUser?.email || "Client"}</p>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <Tile label="MY CASES" onClick={() => setView("cases")} />
+          <Tile label="MY LAWYERS" dim />
+          <Tile label="NEW CASE" onClick={onPostNewCase} />
+          <Tile label="MESSAGES" dim />
+        </div>
+
+        <div className="flex-1" />
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <Tile label="SETTINGS" dim />
+          <Tile label="LOG OUT" dark onClick={onSignOut} />
+        </div>
+      </div>
+    </Screen>
   );
 }

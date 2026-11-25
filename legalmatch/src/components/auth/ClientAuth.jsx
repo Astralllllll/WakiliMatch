@@ -60,10 +60,10 @@ function ClientLoginForm({ onAuthSuccess }) {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-1" style={{ color: "#0F2744" }}>
+        <h2 className="text-2xl font-semibold mb-1 text-navy">
           Welcome back
         </h2>
-        <p className="text-sm text-gray-500">Sign in to manage your cases and matches.</p>
+        <p className="text-sm text-slate">Sign in to manage your cases and matches.</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -90,18 +90,14 @@ function ClientLoginForm({ onAuthSuccess }) {
         </FormField>
 
         <div className="flex justify-end -mt-1">
-          <button
-            type="button"
-            className="text-xs hover:underline"
-            style={{ color: "#1D9E75" }}
-          >
+          <button type="button" className="text-xs text-gold-text hover:underline">
             Forgot password?
           </button>
         </div>
 
         <SubmitButton loading={loading}>Sign in</SubmitButton>
         {success && (
-          <p className="text-xs text-center -mt-1" style={{ color: "#0F6E56" }}>
+          <p className="text-xs text-center -mt-1 text-navy">
             Signed in successfully. Redirecting...
           </p>
         )}
@@ -174,10 +170,10 @@ function ClientRegisterForm({ onAuthSuccess }) {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-semibold mb-1" style={{ color: "#0F2744" }}>
+        <h2 className="text-2xl font-semibold mb-1 text-navy">
           Create your account
         </h2>
-        <p className="text-sm text-gray-500">Find qualified advocates for your legal needs.</p>
+        <p className="text-sm text-slate">Find qualified advocates for your legal needs.</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -233,13 +229,13 @@ function ClientRegisterForm({ onAuthSuccess }) {
           />
         </FormField>
 
-        <p className="text-xs text-gray-400 -mt-1">
+        <p className="text-xs text-slate -mt-1">
           By creating an account you agree to our{" "}
-          <span className="underline cursor-pointer" style={{ color: "#1D9E75" }}>
+          <span className="underline cursor-pointer text-gold-text">
             Terms of Service
           </span>{" "}
           and{" "}
-          <span className="underline cursor-pointer" style={{ color: "#1D9E75" }}>
+          <span className="underline cursor-pointer text-gold-text">
             Privacy Policy
           </span>
           .
@@ -247,7 +243,7 @@ function ClientRegisterForm({ onAuthSuccess }) {
 
         <SubmitButton loading={loading}>Create account</SubmitButton>
         {success && (
-          <p className="text-xs text-center -mt-1" style={{ color: "#0F6E56" }}>
+          <p className="text-xs text-center -mt-1 text-navy">
             Account created. Redirecting...
           </p>
         )}

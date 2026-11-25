@@ -1,83 +1,13 @@
 import { useState } from "react";
-import StepIndicator from "./StepIndicator";
 import { useCaseContext, LEGAL_CATEGORIES, KENYAN_COUNTIES, URGENCY_LEVELS } from "../../context/CaseContext";
 import { submitIssue, generateMatches } from "./caseApi";
+import { Screen, TitleBar } from "../ui/Screen";
+import { Button, Field, Pill, Select, TextArea, TextInput } from "../ui/Controls";
+import { StepDots } from "../ui/Tiles";
 
-// ─── Shared field styles ────────────────────────────────────────────────────
+// ─── Step 2: category, title, jurisdiction (brief section B3) ─────────────
 
-const inputStyle = {
-  width: "100%",
-  padding: "10px 14px",
-  border: "1px solid #CBD5E1",
-  borderRadius: "8px",
-  background: "white",
-  color: "#0F172A",
-  fontSize: "14px",
-  outline: "none",
-  transition: "border-color .15s, box-shadow .15s",
-  fontFamily: "inherit",
-};
-
-function Field({ label, hint, error, children }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-      <label style={{ fontSize: "13px", fontWeight: 500, color: "#0F2744" }}>
-        {label}
-      </label>
-      {children}
-      {hint && !error && (
-        <p style={{ fontSize: "11px", color: "#94A3B8" }}>{hint}</p>
-      )}
-      {error && (
-        <p style={{ fontSize: "11px", color: "#E24B4A" }}>{error}</p>
-      )}
-    </div>
-  );
-}
-
-function StyledInput({ value, onChange, placeholder, type = "text", hasError }) {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      style={{ ...inputStyle, borderColor: hasError ? "#E24B4A" : "#CBD5E1" }}
-      onFocus={(e) => { e.target.style.borderColor = "#1D9E75"; e.target.style.boxShadow = "0 0 0 3px #E1F5EE"; }}
-      onBlur={(e) => { e.target.style.borderColor = hasError ? "#E24B4A" : "#CBD5E1"; e.target.style.boxShadow = "none"; }}
-    />
-  );
-}
-
-function StyledSelect({ value, onChange, children, hasError }) {
-  return (
-    <select
-      value={value}
-      onChange={onChange}
-      style={{ ...inputStyle, borderColor: hasError ? "#E24B4A" : "#CBD5E1", cursor: "pointer" }}
-      onFocus={(e) => { e.target.style.borderColor = "#1D9E75"; e.target.style.boxShadow = "0 0 0 3px #E1F5EE"; }}
-      onBlur={(e) => { e.target.style.borderColor = hasError ? "#E24B4A" : "#CBD5E1"; e.target.style.boxShadow = "none"; }}
-    >
-      {children}
-    </select>
-  );
-}
-
-function ReviewRow({ label, value }) {
-  return (
-    <div style={{
-      display: "flex", justifyContent: "space-between", gap: "16px",
-      padding: "10px 0", borderBottom: "0.5px solid #F1F5F9",
-    }}>
-      <span style={{ fontSize: "13px", color: "#64748B", flexShrink: 0 }}>{label}</span>
-      <span style={{ fontSize: "13px", color: "#0F2744", fontWeight: 500, textAlign: "right" }}>{value}</span>
-    </div>
-  );
-}
-
-// ─── Step 1: Category & Title ───────────────────────────────────────────────
-
-function Step1({ onNext }) {
+function CategoryStep({ onNext }) {
   const { caseData, updateCase } = useCaseContext();
   const [errors, setErrors] = useState({});
 
@@ -97,26 +27,26 @@ function Step1({ onNext }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <Field label="Legal category" error={errors.legalCategory}>
-        <StyledSelect
-          value={caseData.legalCategory}
-          onChange={(e) => updateCase({ legalCategory: e.target.value })}
-          hasError={!!errors.legalCategory}
-        >
-          <option value="">Select a category…</option>
+    <div className="flex flex-col gap-5">
+      <Field label="Legal category *" error={errors.legalCategory}>
+        <div className="grid grid-cols-3 gap-1.5">
           {LEGAL_CATEGORIES.map((c) => (
-            <option key={c.value} value={c.value}>{c.label}</option>
+            <Pill
+              key={c.value}
+              label={c.label.replace(" Law", "")}
+              active={caseData.legalCategory === c.value}
+              onClick={() => updateCase({ legalCategory: c.value })}
+            />
           ))}
-        </StyledSelect>
+        </div>
       </Field>
 
       <Field
-        label="Case title"
+        label="Case title *"
         hint="A short summary of your legal issue (e.g. 'Unfair dismissal from employment')."
         error={errors.title}
       >
-        <StyledInput
+        <TextInput
           value={caseData.title}
           onChange={(e) => updateCase({ title: e.target.value })}
           placeholder="Briefly describe your case in one line"
@@ -124,8 +54,8 @@ function Step1({ onNext }) {
         />
       </Field>
 
-      <Field label="County / Jurisdiction" error={errors.jurisdiction}>
-        <StyledSelect
+      <Field label="Jurisdiction (county) *" error={errors.jurisdiction}>
+        <Select
           value={caseData.jurisdiction}
           onChange={(e) => updateCase({ jurisdiction: e.target.value })}
           hasError={!!errors.jurisdiction}
@@ -134,28 +64,17 @@ function Step1({ onNext }) {
           {KENYAN_COUNTIES.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
-        </StyledSelect>
+        </Select>
       </Field>
 
-      <button
-        onClick={handleNext}
-        style={{
-          width: "100%", padding: "11px", borderRadius: "8px",
-          background: "#1D9E75", color: "white", border: "none",
-          fontSize: "14px", fontWeight: 500, cursor: "pointer", marginTop: "8px",
-        }}
-        onMouseEnter={(e) => e.target.style.background = "#0F6E56"}
-        onMouseLeave={(e) => e.target.style.background = "#1D9E75"}
-      >
-        Continue →
-      </button>
+      <Button onClick={handleNext} className="mt-2">Continue →</Button>
     </div>
   );
 }
 
-// ─── Step 2: Description & Budget ──────────────────────────────────────────
+// ─── Step 3: description, urgency, budget, privacy note (brief B3) ────────
 
-function Step2({ onNext, onBack }) {
+function DetailsStep({ onNext, onBack }) {
   const { caseData, updateCase } = useCaseContext();
   const [errors, setErrors] = useState({});
 
@@ -165,10 +84,8 @@ function Step2({ onNext, onBack }) {
     else if (caseData.description.trim().length < 50)
       errs.description = "Please provide more detail — at least 50 characters.";
     if (!caseData.urgencyLevel) errs.urgencyLevel = "Select an urgency level.";
-    if (caseData.budgetMin && caseData.budgetMax) {
-      if (Number(caseData.budgetMin) >= Number(caseData.budgetMax))
-        errs.budgetMax = "Maximum budget must be greater than minimum.";
-    }
+    if (caseData.budgetMin && caseData.budgetMax && Number(caseData.budgetMin) >= Number(caseData.budgetMax))
+      errs.budgetMax = "Maximum budget must be greater than minimum.";
     return errs;
   };
 
@@ -179,220 +96,64 @@ function Step2({ onNext, onBack }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div className="flex flex-col gap-5">
       <Field
-        label="Describe your case"
+        label="Case description *"
         hint="Include relevant background, what outcome you need, and any key dates. More detail improves your matches."
         error={errors.description}
       >
-        <textarea
+        <TextArea
           value={caseData.description}
           onChange={(e) => updateCase({ description: e.target.value })}
           placeholder="Explain your legal situation in as much detail as you can…"
           rows={5}
-          style={{
-            ...inputStyle,
-            resize: "vertical",
-            lineHeight: 1.6,
-            borderColor: errors.description ? "#E24B4A" : "#CBD5E1",
-          }}
-          onFocus={(e) => { e.target.style.borderColor = "#1D9E75"; e.target.style.boxShadow = "0 0 0 3px #E1F5EE"; }}
-          onBlur={(e) => { e.target.style.borderColor = errors.description ? "#E24B4A" : "#CBD5E1"; e.target.style.boxShadow = "none"; }}
+          hasError={!!errors.description}
         />
-        <p style={{ fontSize: "11px", color: "#94A3B8", textAlign: "right", marginTop: "-2px" }}>
-          {caseData.description.length} characters
-        </p>
+        <p className="text-[11px] text-slate text-right">{caseData.description.length} characters</p>
       </Field>
 
-      <Field label="Urgency level" error={errors.urgencyLevel}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <Field label="Urgency level *" error={errors.urgencyLevel}>
+        <div className="flex flex-col gap-2">
           {URGENCY_LEVELS.map((u) => {
             const selected = caseData.urgencyLevel === u.value;
             return (
-              <div
+              <button
                 key={u.value}
+                type="button"
                 onClick={() => updateCase({ urgencyLevel: u.value })}
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  border: `1px solid ${selected ? "#1D9E75" : "#CBD5E1"}`,
-                  background: selected ? "#E1F5EE" : "white",
-                  cursor: "pointer",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  transition: "all .15s",
-                }}
+                aria-pressed={selected}
+                className={[
+                  "min-h-11 rounded-sm border px-3 py-2.5 flex items-center justify-between gap-3 text-left transition-colors",
+                  selected ? "bg-ice border-navy" : "bg-white border-border-strong",
+                ].join(" ")}
               >
                 <div>
-                  <p style={{ fontSize: "13px", fontWeight: 500, color: selected ? "#0F6E56" : "#0F2744", margin: 0 }}>
-                    {u.label}
-                  </p>
-                  <p style={{ fontSize: "11px", color: selected ? "#1D9E75" : "#94A3B8", margin: 0 }}>
-                    {u.description}
-                  </p>
+                  <p className={`text-[13px] font-semibold m-0 ${selected ? "text-navy" : "text-body"}`}>{u.label}</p>
+                  <p className="text-[11px] text-slate m-0">{u.description}</p>
                 </div>
-                <div style={{
-                  width: "16px", height: "16px", borderRadius: "50%",
-                  border: `2px solid ${selected ? "#1D9E75" : "#CBD5E1"}`,
-                  background: selected ? "#1D9E75" : "white",
-                  flexShrink: 0,
-                }} />
-              </div>
+                <div className={`w-4 h-4 rounded-full border-2 shrink-0 ${selected ? "bg-navy border-navy" : "border-border-strong"}`} />
+              </button>
             );
           })}
         </div>
       </Field>
 
-      <Field
-        label="Budget range (KES)"
-        hint="Optional. Helps lawyers assess whether they can assist within your means."
-        error={errors.budgetMax}
-      >
-        <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <StyledInput
-            type="number"
-            value={caseData.budgetMin}
-            onChange={(e) => updateCase({ budgetMin: e.target.value })}
-            placeholder="Min"
-          />
-          <span style={{ color: "#94A3B8", fontSize: "13px", flexShrink: 0 }}>to</span>
-          <StyledInput
-            type="number"
-            value={caseData.budgetMax}
-            onChange={(e) => updateCase({ budgetMax: e.target.value })}
-            placeholder="Max"
-            hasError={!!errors.budgetMax}
-          />
+      <Field label="Budget range (KES)" hint="Optional. Helps lawyers assess whether they can assist within your means." error={errors.budgetMax}>
+        <div className="flex gap-2 items-center">
+          <TextInput type="number" value={caseData.budgetMin} onChange={(e) => updateCase({ budgetMin: e.target.value })} placeholder="Min" />
+          <span className="text-slate text-[13px] shrink-0">to</span>
+          <TextInput type="number" value={caseData.budgetMax} onChange={(e) => updateCase({ budgetMax: e.target.value })} placeholder="Max" hasError={!!errors.budgetMax} />
         </div>
       </Field>
 
-      {/* Privacy notice */}
-      <div style={{ display: "flex", gap: "10px", padding: "12px 14px", background: "#F1F5F9", borderRadius: "8px" }}>
-        <svg width="14" height="14" style={{ flexShrink: 0, marginTop: "1px" }} viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-        <p style={{ fontSize: "11px", color: "#64748B", lineHeight: 1.5, margin: 0 }}>
-          Your case details are private. They will only be shared with the lawyer you choose to select.
-        </p>
+      <div className="text-[10.5px] text-slate border border-dashed border-border-strong rounded-sm px-2.5 py-2 leading-relaxed">
+        Details hidden from lawyers until you select one.
       </div>
 
-      <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-        <button
-          onClick={onBack}
-          style={{
-            flex: 1, padding: "11px", borderRadius: "8px",
-            background: "white", color: "#0F2744",
-            border: "1px solid #CBD5E1", fontSize: "14px",
-            fontWeight: 500, cursor: "pointer",
-          }}
-          onMouseEnter={(e) => e.target.style.background = "#F8FAFC"}
-          onMouseLeave={(e) => e.target.style.background = "white"}
-        >
-          ← Back
-        </button>
-        <button
-          onClick={handleNext}
-          style={{
-            flex: 2, padding: "11px", borderRadius: "8px",
-            background: "#1D9E75", color: "white", border: "none",
-            fontSize: "14px", fontWeight: 500, cursor: "pointer",
-          }}
-          onMouseEnter={(e) => e.target.style.background = "#0F6E56"}
-          onMouseLeave={(e) => e.target.style.background = "#1D9E75"}
-        >
-          Review case →
-        </button>
+      <div className="flex gap-2 mt-2">
+        <Button variant="outline" onClick={onBack} className="flex-1">← Back</Button>
+        <Button onClick={handleNext} className="flex-[2]">Find matches →</Button>
       </div>
-    </div>
-  );
-}
-
-// ─── Step 3: Review & Submit ────────────────────────────────────────────────
-
-function Step3({ onBack, onSubmit, submitting }) {
-  const { caseData } = useCaseContext();
-
-  const category = LEGAL_CATEGORIES.find((c) => c.value === caseData.legalCategory);
-  const urgency = URGENCY_LEVELS.find((u) => u.value === caseData.urgencyLevel);
-
-  const budgetDisplay = caseData.budgetMin || caseData.budgetMax
-    ? `KES ${Number(caseData.budgetMin || 0).toLocaleString()} – ${Number(caseData.budgetMax || 0).toLocaleString()}`
-    : "Not specified";
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <p style={{ fontSize: "13px", color: "#64748B", marginBottom: "12px" }}>
-          Review your case details before submitting. Once submitted, your case will be matched against available advocates.
-        </p>
-
-        <div style={{
-          border: "1px solid #E2E8F0", borderRadius: "10px",
-          padding: "4px 16px", background: "white",
-        }}>
-          <ReviewRow label="Category" value={category?.label || "—"} />
-          <ReviewRow label="Title" value={caseData.title} />
-          <ReviewRow label="County" value={caseData.jurisdiction} />
-          <ReviewRow label="Urgency" value={urgency?.label || "—"} />
-          <ReviewRow label="Budget" value={budgetDisplay} />
-        </div>
-      </div>
-
-      {/* Description preview */}
-      <div>
-        <p style={{ fontSize: "13px", color: "#64748B", marginBottom: "8px" }}>Case description</p>
-        <div style={{
-          padding: "12px 14px", background: "#F8FAFC",
-          border: "1px solid #E2E8F0", borderRadius: "8px",
-          fontSize: "13px", color: "#0F2744", lineHeight: 1.6,
-          maxHeight: "120px", overflowY: "auto",
-        }}>
-          {caseData.description}
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-        <button
-          onClick={onBack}
-          disabled={submitting}
-          style={{
-            flex: 1, padding: "11px", borderRadius: "8px",
-            background: "white", color: "#0F2744",
-            border: "1px solid #CBD5E1", fontSize: "14px",
-            fontWeight: 500, cursor: submitting ? "not-allowed" : "pointer",
-          }}
-          onMouseEnter={(e) => { if (!submitting) e.target.style.background = "#F8FAFC"; }}
-          onMouseLeave={(e) => e.target.style.background = "white"}
-        >
-          ← Back
-        </button>
-        <button
-          onClick={onSubmit}
-          disabled={submitting}
-          style={{
-            flex: 2, padding: "11px", borderRadius: "8px",
-            background: submitting ? "#5DCAA5" : "#1D9E75",
-            color: "white", border: "none",
-            fontSize: "14px", fontWeight: 500,
-            cursor: submitting ? "not-allowed" : "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-          }}
-        >
-          {submitting ? (
-            <>
-              <svg style={{ animation: "spin 1s linear infinite" }} width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="white" strokeOpacity=".3" strokeWidth="3" />
-                <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
-              </svg>
-              Finding matches…
-            </>
-          ) : "Submit & find lawyers →"}
-        </button>
-      </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
@@ -400,7 +161,7 @@ function Step3({ onBack, onSubmit, submitting }) {
 // ─── Wizard shell ───────────────────────────────────────────────────────────
 
 export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2); // step 1 (intake) is implicitly done: manual entry via "New Case"
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const { caseData, updateCase } = useCaseContext();
@@ -461,6 +222,10 @@ export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
       updateCase({
         caseId: issueId,
         matches: matchResult.data?.matches || [],
+        status: matchResult.data?.status || null,
+        message: matchResult.data?.message || null,
+        exampleQueries: matchResult.data?.example_queries || [],
+        xai: matchResult.data?.xai || null,
       });
       onSubmitSuccess(issueId);
     } catch (err) {
@@ -471,63 +236,24 @@ export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
     }
   };
 
-  const stepTitles = [
-    "What type of legal help do you need?",
-    "Tell us about your case",
-    "Review your case",
-  ];
-
   return (
-    <div style={{
-      minHeight: "100vh", background: "#F8FAFC",
-      display: "flex", alignItems: "flex-start",
-      justifyContent: "center", padding: "48px 16px",
-    }}>
-      <div style={{ width: "100%", maxWidth: "520px" }}>
-        {/* Header */}
-        <div style={{ marginBottom: "32px", textAlign: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", marginBottom: "20px" }}>
-            <div style={{
-              width: "28px", height: "28px", borderRadius: "6px",
-              background: "#0F2744", display: "flex", alignItems: "center", justifyContent: "center",
-            }}>
-              <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
-                <path d="M9 2L3 6v4c0 3.5 2.5 6.5 6 7.5C13.5 16.5 16 13.5 16 10V6L9 2z" fill="white" fillOpacity=".9" />
-              </svg>
-            </div>
-            <span style={{ fontWeight: 600, fontSize: "15px", color: "#0F2744", letterSpacing: "-.3px" }}>
-              WakiliMatch
-            </span>
-          </div>
-          <h1 style={{ fontSize: "22px", fontWeight: 600, color: "#0F2744", marginBottom: "6px" }}>
-            {stepTitles[step - 1]}
-          </h1>
-          <p style={{ fontSize: "13px", color: "#64748B" }}>
-            Step {step} of 3
-          </p>
-        </div>
-
-        <StepIndicator currentStep={step} />
-
-        {/* Form card */}
-        <div style={{
-          background: "white", borderRadius: "12px",
-          border: "1px solid #E2E8F0", padding: "28px",
-        }}>
-          {step === 1 && <Step1 onNext={() => setStep(2)} />}
-          {step === 2 && <Step2 onNext={() => setStep(3)} onBack={() => setStep(1)} />}
-          {step === 3 && <Step3 onBack={() => setStep(2)} onSubmit={handleSubmit} submitting={submitting} />}
-          {submitError && (
-            <p style={{ marginTop: "14px", fontSize: "12px", color: "#E24B4A" }}>
-              {submitError}
-            </p>
-          )}
-        </div>
-
-        <p style={{ textAlign: "center", fontSize: "12px", color: "#94A3B8", marginTop: "20px" }}>
+    <Screen>
+      <TitleBar title="Post a Case" />
+      <div className="p-4 flex-1 flex flex-col">
+        <StepDots current={step} />
+        {step === 2 && <CategoryStep onNext={() => setStep(3)} />}
+        {step === 3 && (
+          <DetailsStep
+            onNext={submitting ? () => {} : handleSubmit}
+            onBack={() => setStep(2)}
+          />
+        )}
+        {submitting && <p className="text-xs text-slate mt-3 text-center">Finding matches…</p>}
+        {submitError && <p className="text-xs text-red-600 mt-3">{submitError}</p>}
+        <p className="text-center text-[10.5px] text-slate mt-6">
           Your information is protected under the Kenya Data Protection Act (2019).
         </p>
       </div>
-    </div>
+    </Screen>
   );
 }

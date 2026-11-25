@@ -40,7 +40,8 @@ router.get('/issue/:issueId', async (req, res) => {
         lp.languages,
         lp.price_guidance,
         lp.average_rating,
-        lp.total_reviews
+        lp.total_reviews,
+        lp.previous_cases_handled
       FROM Matches m
       LEFT JOIN LawyerProfiles lp ON lp.user_id = m.lawyer_id
       WHERE m.issue_id = $1
@@ -598,6 +599,7 @@ router.post('/generate', async (req, res) => {
         lp.price_guidance,
         lp.average_rating,
         lp.total_reviews,
+        lp.previous_cases_handled,
         COALESCE(
           json_agg(
             json_build_object(
@@ -632,6 +634,7 @@ router.post('/generate', async (req, res) => {
       priceGuidance: row.price_guidance,
       averageRating: row.average_rating,
       totalReviews: row.total_reviews,
+      previousCasesHandled: row.previous_cases_handled,
       pastCases: row.past_cases || [],
     }));
 
@@ -673,6 +676,7 @@ router.post('/generate', async (req, res) => {
         full_name: match.fullName,
         specializations: match.specializations,
         years_of_experience: match.yearsOfExperience,
+        previous_cases_handled: match.previousCasesHandled ?? null,
         match_reason: match.matchReason,
         warning: match.warning,
         why: match.why || null,

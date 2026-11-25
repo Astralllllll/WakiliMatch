@@ -1,1 +1,29 @@
 @import "tailwindcss";
+
+/* Design tokens (brief section B2). Defined once, reused everywhere instead
+   of the old scattered inline hex values. Gold is never used as text color
+   on a light background (fails contrast) - use --gold-text for that. */
+@theme {
+  --color-navy: #1B2A4A;
+  --color-navy-deep: #121D33;
+  --color-ice: #EDF2FA;
+  --color-gold: #C9A227;
+  --color-gold-text: #8A6A00;
+  --color-slate: #5B6B85;
+  --color-border: #DCE3EF;
+  --color-border-strong: #C7D0E3;
+  --color-body: #33404E;
+
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 24px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background: var(--color-navy-deep);
+  color: var(--color-body);
+  font-family: var(--font-sans);
+}

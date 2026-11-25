@@ -16,6 +16,14 @@ export function CaseProvider({ children }) {
     // After submission
     caseId: null,
     matches: [],
+    // AI matching result metadata (brief sections A1/A3) - null until a
+    // live /generate call returns them; re-fetching an existing case's
+    // matches via GET does not carry these, so the XAI card is simply
+    // omitted on that path rather than faked.
+    status: null,
+    message: null,
+    exampleQueries: [],
+    xai: null,
   });
 
   const updateCase = (fields) =>
@@ -32,6 +40,10 @@ export function CaseProvider({ children }) {
       budgetMax: "",
       caseId: null,
       matches: [],
+      status: null,
+      message: null,
+      exampleQueries: [],
+      xai: null,
     });
 
   return (

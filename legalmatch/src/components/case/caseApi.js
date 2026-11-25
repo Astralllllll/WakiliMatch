@@ -101,6 +101,17 @@ export async function submitLawyerReview(payload) {
   return postJson("/api/matches/review", payload);
 }
 
+export async function getLawyerPastCases(lawyerId) {
+  const response = await fetch(`${API_BASE_URL}/api/lawyers/${lawyerId}/past-cases`);
+  const data = await readJsonSafely(response);
+
+  if (!response.ok) {
+    return { ok: false, error: data?.error || "Unable to fetch lawyer case history.", pastCases: [] };
+  }
+
+  return { ok: true, pastCases: Array.isArray(data?.pastCases) ? data.pastCases : [] };
+}
+
 export async function getLawyerReview(matchId, clientId) {
   const response = await fetch(`${API_BASE_URL}/api/matches/review/${matchId}/${clientId}`);
   const data = await readJsonSafely(response);

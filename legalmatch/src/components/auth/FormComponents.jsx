@@ -1,24 +1,21 @@
 import { useState } from "react";
+import { Button } from "../ui/Controls";
 
 export function FormField({ label, id, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label
-        htmlFor={id}
-        className="text-sm font-medium"
-        style={{ color: "#0F2744" }}
-      >
+      <label htmlFor={id} className="text-[13px] font-semibold text-navy">
         {label}
       </label>
       {children}
-      {error && (
-        <p className="text-xs" style={{ color: "#E24B4A" }}>
-          {error}
-        </p>
-      )}
+      {error && <p className="text-xs text-red-600">{error}</p>}
     </div>
   );
 }
+
+const inputBase =
+  "w-full min-h-11 rounded-sm border px-3.5 py-2.5 text-sm bg-white text-body outline-none transition-colors " +
+  "border-border-strong focus:border-navy focus:ring-2 focus:ring-ice";
 
 export function TextInput({ id, type = "text", placeholder, value, onChange, hasError }) {
   return (
@@ -28,21 +25,7 @@ export function TextInput({ id, type = "text", placeholder, value, onChange, has
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all"
-      style={{
-        borderColor: hasError ? "#E24B4A" : "#CBD5E1",
-        backgroundColor: "white",
-        color: "#0F172A",
-        boxShadow: "none",
-      }}
-      onFocus={(e) => {
-        e.target.style.borderColor = hasError ? "#E24B4A" : "#1D9E75";
-        e.target.style.boxShadow = `0 0 0 3px ${hasError ? "#FCEBEB" : "#E1F5EE"}`;
-      }}
-      onBlur={(e) => {
-        e.target.style.borderColor = hasError ? "#E24B4A" : "#CBD5E1";
-        e.target.style.boxShadow = "none";
-      }}
+      className={`${inputBase} ${hasError ? "border-red-400 focus:border-red-400 focus:ring-red-100" : ""}`}
     />
   );
 }
@@ -59,25 +42,12 @@ export function PasswordInput({ id, placeholder, value, onChange, hasError, minL
         value={value}
         onChange={onChange}
         minLength={minLength}
-        className="w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all pr-10"
-        style={{
-          borderColor: hasError ? "#E24B4A" : "#CBD5E1",
-          backgroundColor: "white",
-          color: "#0F172A",
-        }}
-        onFocus={(e) => {
-          e.target.style.borderColor = "#1D9E75";
-          e.target.style.boxShadow = "0 0 0 3px #E1F5EE";
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = hasError ? "#E24B4A" : "#CBD5E1";
-          e.target.style.boxShadow = "none";
-        }}
+        className={`${inputBase} pr-10 ${hasError ? "border-red-400 focus:border-red-400 focus:ring-red-100" : ""}`}
       />
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate hover:text-navy transition-colors"
         aria-label={visible ? "Hide password" : "Show password"}
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -101,17 +71,7 @@ export function PasswordInput({ id, placeholder, value, onChange, hasError, minL
 
 export function SubmitButton({ children, loading }) {
   return (
-    <button
-      type="submit"
-      disabled={loading}
-      className="w-full rounded-lg py-2.5 text-sm font-medium text-white transition-all"
-      style={{
-        backgroundColor: loading ? "#5DCAA5" : "#1D9E75",
-        cursor: loading ? "not-allowed" : "pointer",
-      }}
-      onMouseEnter={(e) => { if (!loading) e.target.style.backgroundColor = "#0F6E56"; }}
-      onMouseLeave={(e) => { if (!loading) e.target.style.backgroundColor = "#1D9E75"; }}
-    >
+    <Button type="submit" disabled={loading}>
       {loading ? (
         <span className="flex items-center justify-center gap-2">
           <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -121,13 +81,13 @@ export function SubmitButton({ children, loading }) {
           Please wait…
         </span>
       ) : children}
-    </button>
+    </Button>
   );
 }
 
 export function TabSwitch({ tabs, active, onChange }) {
   return (
-    <div className="flex p-1 rounded-lg mb-7" style={{ backgroundColor: "#F1F5F9" }} role="tablist">
+    <div className="flex p-1 rounded-sm bg-ice mb-6" role="tablist">
       {tabs.map((tab) => {
         const isActive = tab.value === active;
         return (
@@ -137,13 +97,10 @@ export function TabSwitch({ tabs, active, onChange }) {
             role="tab"
             aria-selected={isActive}
             onClick={() => onChange(tab.value)}
-            className="flex-1 text-sm font-medium py-2 rounded-md transition-all"
-            style={{
-              backgroundColor: isActive ? "white" : "transparent",
-              color: isActive ? "#0F2744" : "#64748B",
-              boxShadow: isActive ? "0 1px 2px rgba(15,23,42,0.08)" : "none",
-              cursor: isActive ? "default" : "pointer",
-            }}
+            className={[
+              "flex-1 text-sm font-semibold py-2 rounded-sm transition-colors min-h-11",
+              isActive ? "bg-white text-navy shadow-sm" : "text-slate cursor-pointer",
+            ].join(" ")}
           >
             {tab.label}
           </button>
@@ -156,9 +113,9 @@ export function TabSwitch({ tabs, active, onChange }) {
 export function Divider({ label }) {
   return (
     <div className="flex items-center gap-3 my-1">
-      <div className="flex-1 border-t border-gray-200" />
-      <span className="text-xs text-gray-400">{label}</span>
-      <div className="flex-1 border-t border-gray-200" />
+      <div className="flex-1 border-t border-border" />
+      <span className="text-xs text-slate">{label}</span>
+      <div className="flex-1 border-t border-border" />
     </div>
   );
 }
