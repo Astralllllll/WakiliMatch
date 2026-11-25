@@ -98,6 +98,40 @@ async function callAiServiceEmbed(texts) {
   }
 }
 
+// The AI service's practice areas (engine/labelling.py) don't map 1:1 onto
+// ClientIssues.legal_category's CHECK constraint - only map the areas that
+// have an unambiguous match; everything else is left for the user to pick.
+const AREA_TO_CATEGORY = {
+  'Employment & Labour': 'employment',
+  'Land & Property': 'property',
+  Criminal: 'criminal',
+  'Family & Succession': 'family',
+  'Commercial & Contract': 'corporate',
+};
+
+/**
+ * Suggests a legal_category from free text using the real semantic engine's
+ * matched_area (brief section B6: "use the engine's matched area where
+ * possible") - independent of LLM_PROVIDER, since this isn't text
+ * generation, just the existing retrieval engine's classification.
+ * Returns { category: null } on any non-success status or failure rather
+ * than guessing.
+ */
+async function suggestCategoryFromText(text) {
+  if (!text || !text.trim()) return { category: null, area: null };
+  try {
+    const result = await callAiServiceMatch(text, 5, 1);
+    if (result.status && !['success', 'no_lawyers_found'].includes(result.status)) {
+      return { category: null, area: null };
+    }
+    const area = result.xai?.matched_area || null;
+    return { category: AREA_TO_CATEGORY[area] || null, area };
+  } catch (err) {
+    console.warn('Category suggestion via AI service failed:', err.message);
+    return { category: null, area: null };
+  }
+}
+
 /**
  * Main matching router: uses AI service if MATCHING_ENGINE=ai, falls back to TF-IDF if configured.
  */
@@ -264,4 +298,4 @@ async function generateMatchesForIssue(clientIssue, lawyerProfiles) {
   };
 }
 
-export { generateMatchesForIssue, callAiServiceMatch, callAiServiceEmbed };
+export { generateMatchesForIssue, callAiServiceMatch, callAiServiceEmbed, suggestCategoryFromText };

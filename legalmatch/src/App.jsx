@@ -187,6 +187,7 @@ function AppShell() {
         <PostCaseWizard
           currentUser={currentUser}
           onSubmitSuccess={() => setPage("results")}
+          onExit={() => setPage("client-dashboard")}
         />
       )}
       {page === "results" && (

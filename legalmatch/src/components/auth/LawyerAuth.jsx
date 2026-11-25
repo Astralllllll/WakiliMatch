@@ -59,18 +59,17 @@ function LawyerLoginForm({ onAuthSuccess }) {
   return (
     <div>
       <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full text-xs font-medium"
-          style={{ backgroundColor: "#E1F5EE", color: "#0F6E56" }}>
+        <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full text-xs font-medium bg-ice text-gold-text">
           <svg width="12" height="12" viewBox="0 0 18 18" fill="none">
             <path d="M9 1.5L2.25 5.25v4.5c0 4.125 2.9 7.988 6.75 8.925C12.85 17.738 15.75 13.875 15.75 9.75V5.25L9 1.5z"
               fill="currentColor" fillOpacity="0.8" />
           </svg>
           Advocate portal
         </div>
-        <h2 className="text-2xl font-semibold mb-1" style={{ color: "#0F2744" }}>
+        <h2 className="text-2xl font-semibold mb-1 text-navy">
           Sign in to your practice
         </h2>
-        <p className="text-sm text-gray-500">Use your email address or LSK registration number.</p>
+        <p className="text-sm text-slate">Use your email address or LSK registration number.</p>
       </div>
 
       <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-4">
@@ -96,14 +95,14 @@ function LawyerLoginForm({ onAuthSuccess }) {
         </FormField>
 
         <div className="flex justify-end -mt-1">
-          <button type="button" className="text-xs hover:underline" style={{ color: "#1D9E75" }}>
+          <button type="button" className="text-xs text-gold-text hover:underline">
             Forgot password?
           </button>
         </div>
 
         <SubmitButton loading={loading}>Sign in</SubmitButton>
         {success && (
-          <p className="text-xs text-center -mt-1" style={{ color: "#0F6E56" }}>
+          <p className="text-xs text-center -mt-1 text-navy">
             Signed in successfully. Redirecting...
           </p>
         )}
@@ -181,18 +180,17 @@ function LawyerRegisterForm({ onAuthSuccess }) {
   return (
     <div>
       <div className="mb-8">
-        <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full text-xs font-medium"
-          style={{ backgroundColor: "#E1F5EE", color: "#0F6E56" }}>
+        <div className="inline-flex items-center gap-1.5 mb-3 px-2.5 py-1 rounded-full text-xs font-medium bg-ice text-gold-text">
           <svg width="12" height="12" viewBox="0 0 18 18" fill="none">
             <path d="M9 1.5L2.25 5.25v4.5c0 4.125 2.9 7.988 6.75 8.925C12.85 17.738 15.75 13.875 15.75 9.75V5.25L9 1.5z"
               fill="currentColor" fillOpacity="0.8" />
           </svg>
           Advocate portal
         </div>
-        <h2 className="text-2xl font-semibold mb-1" style={{ color: "#0F2744" }}>
+        <h2 className="text-2xl font-semibold mb-1 text-navy">
           Register your practice
         </h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-slate">
           Your LSK number will be verified before your profile goes live.
         </p>
       </div>
@@ -266,28 +264,28 @@ function LawyerRegisterForm({ onAuthSuccess }) {
         </FormField>
 
         {/* LSK verification notice */}
-        <div className="flex gap-2.5 p-3 rounded-lg text-xs" style={{ backgroundColor: "#F1F5F9" }}>
-          <svg width="14" height="14" className="shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none"
-            stroke="#64748B" strokeWidth="2">
+        <div className="flex gap-2.5 p-3 rounded-sm text-xs bg-ice">
+          <svg width="14" height="14" className="shrink-0 mt-0.5 text-slate" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="10" />
             <line x1="12" y1="8" x2="12" y2="12" />
             <line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
-          <p className="text-gray-500">
+          <p className="text-slate">
             Your profile will be reviewed by our admin team before it appears in match results. This typically takes 1–2 business days.
           </p>
         </div>
 
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-slate">
           By registering you agree to our{" "}
-          <span className="underline cursor-pointer" style={{ color: "#1D9E75" }}>Terms of Service</span>{" "}
+          <span className="underline cursor-pointer text-gold-text">Terms of Service</span>{" "}
           and{" "}
-          <span className="underline cursor-pointer" style={{ color: "#1D9E75" }}>Privacy Policy</span>.
+          <span className="underline cursor-pointer text-gold-text">Privacy Policy</span>.
         </p>
 
         <SubmitButton loading={loading}>Register practice</SubmitButton>
         {success && (
-          <p className="text-xs text-center -mt-1" style={{ color: "#0F6E56" }}>
+          <p className="text-xs text-center -mt-1 text-navy">
             Practice registered. Redirecting...
           </p>
         )}

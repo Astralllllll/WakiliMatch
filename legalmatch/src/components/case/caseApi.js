@@ -101,6 +101,22 @@ export async function submitLawyerReview(payload) {
   return postJson("/api/matches/review", payload);
 }
 
+export async function getAiStatus() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/ai/status`);
+    const data = await readJsonSafely(response);
+    return { ok: response.ok, provider: data?.provider || "mock" };
+  } catch {
+    return { ok: false, provider: "mock" };
+  }
+}
+
+export async function draftCaseFromAssistant(answers) {
+  const result = await postJson("/api/ai/draft-case", { answers });
+  if (!result.ok) return { ok: false, error: result.error };
+  return { ok: true, draft: result.data };
+}
+
 export async function getLawyerPastCases(lawyerId) {
   const response = await fetch(`${API_BASE_URL}/api/lawyers/${lawyerId}/past-cases`);
   const data = await readJsonSafely(response);

@@ -7,6 +7,7 @@ import issueRoutes from "./routes/issues.js";
 import matchRoutes from "./routes/matches.js";
 import adminRoutes from "./routes/admin.js";
 import lawyerRoutes from "./routes/lawyers.js";
+import aiRoutes from "./routes/ai.js";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 5000;
@@ -62,6 +63,7 @@ app.use('/api/issues', issueRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/lawyers', lawyerRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true, message: "Server is running" });

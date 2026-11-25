@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 import { getLawyerCaseDetail, getLawyerCases, getLawyerProfile, updateLawyerCaseDecision } from "../auth/authApi";
+import { Screen, TitleBar } from "../ui/Screen";
+import { Button } from "../ui/Controls";
+import { Tile } from "../ui/Tiles";
+import { AIBadge } from "../ui/Badges";
+import { InquiryCard } from "../ui/Cards";
 
-// ─── Design tokens (kept consistent with the rest of the app) ─────────────────
-const NAVY      = "#0F2744";
-const GREEN     = "#1D9E75";
-const GREEN_BG  = "#E6F7F1";
+// ─── Design tokens (brief section B2 - navy/gold, no separate green accent) ───
+const NAVY      = "#1B2A4A";
+const GREEN     = "#1B2A4A"; // old accent green folded into navy - brand has no green
+const GREEN_BG  = "#EDF2FA"; // old pale-green fill folded into ice
 const BORDER    = "#E2E8F0";
 const BG        = "#F0F4F8";
 const TEXT      = "#0F172A";
 const MUTED     = "#64748B";
 const HINT      = "#94A3B8";
-const ERROR     = "#E24B4A";
 const WARN_BG   = "#FFF7ED";
 const WARN      = "#C2620A";
 
@@ -49,11 +53,15 @@ function mapCase(raw) {
   const normalizedStatus = (raw?.status || "requested").toLowerCase();
   const safeStatus = STATUS[normalizedStatus] ? normalizedStatus : "requested";
 
+  const detailsConfirmed = raw?.details_confirmed ?? true;
+
   return {
     id: raw?.match_id,
     issueId: raw?.issue_id,
     title: raw?.issue_title || "Untitled legal matter",
-    description: raw?.issue_description || "No case description provided.",
+    description: raw?.issue_description || (detailsConfirmed ? "No case description provided." : null),
+    detailsConfirmed,
+    aiSummary: raw?.ai_summary || null,
     category: raw?.legal_category || "General",
     jurisdiction: raw?.jurisdiction || "—",
     urgency: raw?.urgency_level || "—",
@@ -355,7 +363,7 @@ function ActiveCaseRow({ c, onOpen }) {
 }
 
 function ActiveCaseDetails({ c, onBack, onDecision, decisionLoading }) {
-  const isDecisionLocked = c.status === "ongoing" || c.status === "declined" || c.status === "completed";
+  const isDecisionLocked = c.status === "ongoing" || c.status === "declined" || c.status === "completed" || c.detailsConfirmed === false;
 
   return (
     <section
@@ -411,7 +419,18 @@ function ActiveCaseDetails({ c, onBack, onDecision, decisionLoading }) {
 
         <div>
           <SectionLabel>Case details</SectionLabel>
-          <p style={{ margin: "6px 0 0", fontSize: "13px", color: TEXT, lineHeight: 1.6 }}>{c.description}</p>
+          {c.detailsConfirmed === false ? (
+            <div style={{ marginTop: "6px", padding: "10px 12px", background: GREEN_BG, borderRadius: "8px" }}>
+              <p style={{ margin: 0, fontSize: "12px", color: MUTED, lineHeight: 1.6 }}>
+                Full details are hidden until the client confirms you specifically for this case.
+              </p>
+              {c.aiSummary && (
+                <p style={{ margin: "6px 0 0", fontSize: "13px", color: TEXT, lineHeight: 1.6 }}>{c.aiSummary}</p>
+              )}
+            </div>
+          ) : (
+            <p style={{ margin: "6px 0 0", fontSize: "13px", color: TEXT, lineHeight: 1.6 }}>{c.description}</p>
+          )}
         </div>
 
         <Divider />
@@ -567,6 +586,7 @@ export default function LawyerDashboard({ currentUser, onEditProfile, onSignOut 
   const [selectedActiveCase, setSelectedActiveCase] = useState(null);
   const [decisionLoading, setDecisionLoading] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [view, setView] = useState("tiles"); // tiles | inquiries | cases
 
   useEffect(() => {
     async function loadDashboard() {
@@ -662,180 +682,166 @@ export default function LawyerDashboard({ currentUser, onEditProfile, onSignOut 
   // ── Loading state ──────────────────────────────────────────────────────────
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: "100vh",
-          background: BG,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <div
-            style={{
-              width: "32px",
-              height: "32px",
-              border: `3px solid ${BORDER}`,
-              borderTopColor: GREEN,
-              borderRadius: "50%",
-              margin: "0 auto 12px",
-              animation: "spin 0.7s linear infinite",
-            }}
-          />
-          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          <p style={{ color: MUTED, fontSize: "13px", margin: 0 }}>Loading your dashboard…</p>
+      <Screen>
+        <TitleBar title="Lawyer Dashboard" />
+        <div className="flex-1 flex items-center justify-center">
+          <div style={{ textAlign: "center" }}>
+            <div
+              style={{
+                width: "32px",
+                height: "32px",
+                border: `3px solid ${BORDER}`,
+                borderTopColor: "#C9A227",
+                borderRadius: "50%",
+                margin: "0 auto 12px",
+                animation: "spin 0.7s linear infinite",
+              }}
+            />
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+            <p style={{ color: MUTED, fontSize: "13px", margin: 0 }}>Loading your dashboard…</p>
+          </div>
         </div>
-      </div>
+      </Screen>
     );
   }
 
-  const requestedCount = active.filter((c) => c.status === "requested").length;
-  const ongoingCount   = active.filter((c) => c.status === "ongoing").length;
+  // Candidate matches the client hasn't confirmed yet (raw status
+  // 'pending') vs ones the client has confirmed and the lawyer must
+  // decide on (raw status 'requested') - brief section B5's privacy
+  // gating is what tells these apart server-side.
+  const unconfirmedCandidates = active.filter((c) => c.detailsConfirmed === false);
+  const needsDecision = active.filter((c) => c.detailsConfirmed !== false && c.status === "requested");
+  const ongoingCases = active.filter((c) => c.status === "ongoing");
+  const inquiriesCount = unconfirmedCandidates.length + needsDecision.length;
 
-  return (
-    <div style={{ minHeight: "100vh", background: BG }}>
-      {/* ── Top nav bar ─────────────────────────────────────────────────── */}
-      <nav
-        style={{
-          background: NAVY,
-          padding: "0 24px",
-          height: "52px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          position: "sticky",
-          top: 0,
-          zIndex: 10,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div
-            style={{
-              width: "24px",
-              height: "24px",
-              borderRadius: "5px",
-              background: GREEN,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <svg width="12" height="12" viewBox="0 0 18 18" fill="none">
-              <path d="M9 2L3 6v4c0 3.5 2.5 6.5 6 7.5C13.5 16.5 16 13.5 16 10V6L9 2z" fill="white" fillOpacity=".9" />
-            </svg>
-          </div>
-          <span style={{ color: "white", fontWeight: 600, fontSize: "14px" }}>WakiliMatch</span>
-        </div>
+  // ── Case detail (reached from Inquiries or My Cases) ───────────────────────
+  if (detailsLoading) {
+    return (
+      <Screen>
+        <TitleBar title="Case Detail" onBack={() => setSelectedActiveCase(null)} />
+        <div className="p-4"><p className="text-[13px] text-slate">Loading case details…</p></div>
+      </Screen>
+    );
+  }
 
-        <button
-          onClick={onSignOut}
-          style={{
-            background: "transparent",
-            border: "1px solid rgba(255,255,255,.2)",
-            color: "rgba(255,255,255,.75)",
-            borderRadius: "7px",
-            padding: "5px 12px",
-            fontSize: "12px",
-            cursor: "pointer",
-          }}
-        >
-          Sign out
-        </button>
-      </nav>
-
-      {/* ── Page body ────────────────────────────────────────────────────── */}
-      <div
-        style={{
-          maxWidth: "780px",
-          margin: "0 auto",
-          padding: "28px 16px 64px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "20px",
-        }}
-      >
-        {/* Page heading + quick stats */}
-        <div>
-          <p style={{ margin: "0 0 2px", fontSize: "11px", fontWeight: 700, letterSpacing: ".07em", color: HINT, textTransform: "uppercase" }}>
-            Lawyer dashboard
-          </p>
-          <h1 style={{ margin: "0 0 14px", fontSize: "22px", fontWeight: 700, color: NAVY }}>
-            Good day, {profile?.fullName?.split(" ")[0] ?? "Advocate"}
-          </h1>
-
-          {/* Summary chips */}
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-            {[
-              { label: "Requested", value: requestedCount, color: "#3B82F6", bg: "#EFF6FF" },
-              { label: "Ongoing",   value: ongoingCount,   color: GREEN,      bg: GREEN_BG },
-              { label: "Completed", value: completed.length, color: MUTED,    bg: "white"  },
-            ].map(({ label, value, color, bg }) => (
-              <div
-                key={label}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 14px",
-                  borderRadius: "10px",
-                  background: bg,
-                  border: `1px solid ${BORDER}`,
-                }}
-              >
-                <span style={{ fontSize: "18px", fontWeight: 700, color }}>{value}</span>
-                <span style={{ fontSize: "12px", color: MUTED }}>{label}</span>
-              </div>
-            ))}
-          </div>
-
-          {error && (
-            <p style={{ margin: "10px 0 0", color: ERROR, fontSize: "12px" }}>
-              {error}
-            </p>
-          )}
-        </div>
-
-        {/* Profile card */}
-        {profile && <ProfileCard profile={profile} onEdit={onEditProfile} />}
-
-        {/* Active cases */}
-        {detailsLoading ? (
-          <section style={{ background: "white", borderRadius: "14px", border: `1px solid ${BORDER}`, padding: "20px" }}>
-            <p style={{ margin: 0, fontSize: "13px", color: MUTED }}>Loading case details...</p>
-          </section>
-        ) : selectedActiveCase ? (
+  if (selectedActiveCase) {
+    return (
+      <Screen>
+        <TitleBar title="Case Detail" onBack={() => setSelectedActiveCase(null)} />
+        <div className="p-4 flex-1 flex flex-col gap-3">
+          {error && <p className="text-[12px] text-red-600">{error}</p>}
           <ActiveCaseDetails
             c={selectedActiveCase}
             onBack={() => setSelectedActiveCase(null)}
             onDecision={handleCaseDecision}
             decisionLoading={decisionLoading}
           />
-        ) : (
-          <CasesCard
-            title="Active cases"
-            count={active.length}
-            emptyMessage="No active cases yet. You'll appear here once a client selects you."
-          >
-            {active.map((c) => (
-              <ActiveCaseRow key={c.id} c={c} onOpen={handleOpenCase} />
-            ))}
-            {/* remove bottom border on last row */}
-            <style>{`.active-last > div:last-child { border-bottom: none; }`}</style>
-          </CasesCard>
-        )}
+        </div>
+      </Screen>
+    );
+  }
 
-        {/* Completed cases */}
-        <CasesCard
-          title="Completed cases"
-          count={completed.length}
-          emptyMessage="Cases you finish will appear here with client ratings."
-        >
-          {completed.map((c) => (
-            <CompletedCaseRow key={c.id} c={c} />
-          ))}
-        </CasesCard>
+  // ── Inquiries ────────────────────────────────────────────────────────────
+  if (view === "inquiries") {
+    return (
+      <Screen>
+        <TitleBar title={<>Inquiries <AIBadge>AI</AIBadge></>} onBack={() => setView("tiles")} />
+        <div className="p-4 flex-1 flex flex-col gap-2.5">
+          <p className="text-[11px] text-slate mb-1">
+            {inquiriesCount} new inquir{inquiriesCount === 1 ? "y" : "ies"}
+            {needsDecision.some((c) => c.aiSummary) && <> · <span className="text-gold-text font-semibold">AI summaries ready</span></>}
+          </p>
+          {inquiriesCount === 0 ? (
+            <p className="text-[12px] text-slate">No new inquiries right now. You'll appear here once a client's case matches your profile.</p>
+          ) : (
+            <>
+              {needsDecision.map((c) => (
+                <InquiryCard
+                  key={c.id}
+                  title={c.title}
+                  meta={`${c.jurisdiction} · ${c.category}`}
+                  summary={c.aiSummary}
+                  isAiGenerated={false}
+                  onClick={() => handleOpenCase(c)}
+                />
+              ))}
+              {unconfirmedCandidates.map((c) => (
+                <InquiryCard
+                  key={c.id}
+                  title={c.category}
+                  meta="Awaiting the client's final choice of lawyer"
+                  summary={c.aiSummary}
+                  isAiGenerated={false}
+                />
+              ))}
+            </>
+          )}
+        </div>
+      </Screen>
+    );
+  }
+
+  // ── Profile ──────────────────────────────────────────────────────────────
+  if (view === "profile") {
+    return (
+      <Screen>
+        <TitleBar title="Profile" onBack={() => setView("tiles")} action={onEditProfile} actionLabel="Edit" />
+        <div className="p-4 flex-1 flex flex-col">
+          {profile && <ProfileCard profile={profile} onEdit={onEditProfile} />}
+        </div>
+      </Screen>
+    );
+  }
+
+  // ── My Cases ─────────────────────────────────────────────────────────────
+  if (view === "cases") {
+    return (
+      <Screen>
+        <TitleBar title="My Cases" onBack={() => setView("tiles")} />
+        <div className="p-4 flex-1 flex flex-col gap-4">
+          <CasesCard title="Ongoing" count={ongoingCases.length} emptyMessage="No ongoing cases yet.">
+            {ongoingCases.map((c) => <ActiveCaseRow key={c.id} c={c} onOpen={handleOpenCase} />)}
+          </CasesCard>
+          <CasesCard title="Completed" count={completed.length} emptyMessage="Cases you finish will appear here with client ratings.">
+            {completed.map((c) => <CompletedCaseRow key={c.id} c={c} />)}
+          </CasesCard>
+        </div>
+      </Screen>
+    );
+  }
+
+  // ── Dashboard tile grid ──────────────────────────────────────────────────
+  return (
+    <Screen>
+      <TitleBar title="Lawyer Dashboard" />
+      <div className="p-4 flex-1 flex flex-col">
+        <p className="text-[12px] text-slate m-0">Advocate panel</p>
+        <p className="text-[16px] font-bold text-navy mb-4">{profile?.fullName || "Advocate"}</p>
+
+        <div className="grid grid-cols-2 gap-2.5">
+          <Tile label="INQUIRIES" badgeCount={inquiriesCount || undefined} onClick={() => setView("inquiries")} />
+          <Tile label="PROFILE" onClick={() => setView("profile")} />
+          <Tile label="MY CASES" onClick={() => setView("cases")} />
+          <Tile label="REPORTS" dim />
+        </div>
+
+        <div className="border border-border rounded-md p-3 mt-3">
+          <p className="text-[10.5px] font-bold text-slate mb-2">QUICK STATS</p>
+          <div className="flex justify-between text-[11px] text-slate py-1">
+            <span>New inquiries</span><b className="text-navy">{inquiriesCount}</b>
+          </div>
+          <div className="flex justify-between text-[11px] text-slate py-1">
+            <span>Ongoing cases</span><b className="text-navy">{ongoingCases.length}</b>
+          </div>
+          <div className="flex justify-between text-[11px] text-slate py-1">
+            <span>Completed</span><b className="text-navy">{completed.length}</b>
+          </div>
+        </div>
+
+        {error && <p className="text-[12px] text-red-600 mt-3">{error}</p>}
+        <div className="flex-1" />
+        <Button variant="outline" onClick={onSignOut}>Log out</Button>
       </div>
-    </div>
+    </Screen>
   );
 }

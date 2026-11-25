@@ -395,36 +395,44 @@ router.get('/case/:matchId', async (req, res) => {
         m.similarity_score,
         m.created_at,
         m.updated_at,
+        -- Privacy gating (brief section B5): the lawyer sees only the
+        -- category + AI summary until the client confirms this specific
+        -- lawyer (status moves off 'pending'). Full details are withheld,
+        -- not just hidden client-side, until then.
+        (LOWER(m.status) <> 'pending') AS details_confirmed,
         ci.issue_title,
-        ci.issue_description,
         ci.legal_category,
-        ci.jurisdiction,
-        ci.urgency_level,
-        ci.budget_range,
-        ci.budget_min,
-        ci.budget_max,
-        u.email AS client_email,
-        COALESCE(
-          NULLIF(TRIM(u.full_name), ''),
-          TRIM(
-            REGEXP_REPLACE(
-              INITCAP(
-                REPLACE(
+        ci.ai_summary,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.issue_description ELSE NULL END AS issue_description,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.jurisdiction ELSE NULL END AS jurisdiction,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.urgency_level ELSE NULL END AS urgency_level,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.budget_range ELSE NULL END AS budget_range,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.budget_min ELSE NULL END AS budget_min,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN ci.budget_max ELSE NULL END AS budget_max,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN u.email ELSE NULL END AS client_email,
+        CASE WHEN LOWER(m.status) <> 'pending' THEN
+          COALESCE(
+            NULLIF(TRIM(u.full_name), ''),
+            TRIM(
+              REGEXP_REPLACE(
+                INITCAP(
                   REPLACE(
-                    SPLIT_PART(COALESCE(u.email, ''), '@', 1),
-                    '.',
+                    REPLACE(
+                      SPLIT_PART(COALESCE(u.email, ''), '@', 1),
+                      '.',
+                      ' '
+                    ),
+                    '_',
                     ' '
-                  ),
-                  '_',
-                  ' '
-                )
-              ),
-              '\\s+',
-              ' ',
-              'g'
+                  )
+                ),
+                '\\s+',
+                ' ',
+                'g'
+              )
             )
           )
-        ) AS client_display_name
+        ELSE NULL END AS client_display_name
       FROM Matches m
       LEFT JOIN ClientIssues ci ON ci.issue_id = m.issue_id
       LEFT JOIN Users u ON u.user_id = m.client_id
@@ -484,37 +492,43 @@ router.get('/lawyer/:lawyerId', async (req, res) => {
         rm.created_at,
         rm.updated_at,
         rm.similarity_score,
+        -- Privacy gating (brief section B5): withheld server-side, not
+        -- just hidden client-side, until the client confirms this lawyer.
+        (LOWER(rm.status) <> 'pending') AS details_confirmed,
         ci.issue_title,
-        ci.issue_description,
         ci.legal_category,
-        ci.jurisdiction,
-        ci.urgency_level,
-        ci.budget_range,
-        ci.budget_min,
-        ci.budget_max,
-        ci.client_id,
-        u.email AS client_email,
-        COALESCE(
-          NULLIF(TRIM(u.full_name), ''),
-          TRIM(
-            REGEXP_REPLACE(
-              INITCAP(
-                REPLACE(
+        ci.ai_summary,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.issue_description ELSE NULL END AS issue_description,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.jurisdiction ELSE NULL END AS jurisdiction,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.urgency_level ELSE NULL END AS urgency_level,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.budget_range ELSE NULL END AS budget_range,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.budget_min ELSE NULL END AS budget_min,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.budget_max ELSE NULL END AS budget_max,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN ci.client_id ELSE NULL END AS client_id,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN u.email ELSE NULL END AS client_email,
+        CASE WHEN LOWER(rm.status) <> 'pending' THEN
+          COALESCE(
+            NULLIF(TRIM(u.full_name), ''),
+            TRIM(
+              REGEXP_REPLACE(
+                INITCAP(
                   REPLACE(
-                    SPLIT_PART(COALESCE(u.email, ''), '@', 1),
-                    '.',
+                    REPLACE(
+                      SPLIT_PART(COALESCE(u.email, ''), '@', 1),
+                      '.',
+                      ' '
+                    ),
+                    '_',
                     ' '
-                  ),
-                  '_',
-                  ' '
-                )
-              ),
-              '\\s+',
-              ' ',
-              'g'
+                  )
+                ),
+                '\\s+',
+                ' ',
+                'g'
+              )
             )
           )
-        ) AS client_display_name,
+        ELSE NULL END AS client_display_name,
         AVG(r.rating)::numeric(3,2) AS rating,
         COUNT(r.review_id)::int AS review_count,
         MAX(r.review_text) AS review_comment,
@@ -533,6 +547,7 @@ router.get('/lawyer/:lawyerId', async (req, res) => {
         ci.issue_title,
         ci.issue_description,
         ci.legal_category,
+        ci.ai_summary,
         ci.jurisdiction,
         ci.urgency_level,
         ci.budget_range,

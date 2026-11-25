@@ -1,5 +1,6 @@
 import express from 'express';
 import pool from '../db.js';
+import { summarizeCase } from '../services/aiAssist.js';
 
 const router = express.Router();
 
@@ -95,6 +96,11 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    // Stored once at creation so lawyers can see a summary pre-confirmation
+    // without the full description (privacy gating, brief section B5).
+    // Always "mock" today (no real LLM_PROVIDER key) - never claim AI.
+    const { summary: aiSummary } = summarizeCase({ legal_category, issue_description, urgency_level });
+
     const queryText = `
       INSERT INTO ClientIssues (
         client_id,
@@ -106,12 +112,13 @@ router.post('/', async (req, res) => {
         budget_range,
         budget_min,
         budget_max,
+        ai_summary,
         status
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'Open')
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'Open')
       RETURNING *;
     `;
-    
+
     const values = [
       client_id,
       issue_title,
@@ -122,6 +129,7 @@ router.post('/', async (req, res) => {
       budget_range || null,
       budget_min !== undefined && budget_min !== null && budget_min !== "" ? Number(budget_min) : null,
       budget_max !== undefined && budget_max !== null && budget_max !== "" ? Number(budget_max) : null,
+      aiSummary || null,
     ];
     const result = await pool.query(queryText, values);
 

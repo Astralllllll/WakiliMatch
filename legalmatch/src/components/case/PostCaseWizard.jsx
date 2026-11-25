@@ -4,6 +4,8 @@ import { submitIssue, generateMatches } from "./caseApi";
 import { Screen, TitleBar } from "../ui/Screen";
 import { Button, Field, Pill, Select, TextArea, TextInput } from "../ui/Controls";
 import { StepDots } from "../ui/Tiles";
+import AiAssistantScreen from "./AiAssistantScreen";
+import ScanDocumentScreen from "./ScanDocumentScreen";
 
 // ─── Step 2: category, title, jurisdiction (brief section B3) ─────────────
 
@@ -160,11 +162,26 @@ function DetailsStep({ onNext, onBack }) {
 
 // ─── Wizard shell ───────────────────────────────────────────────────────────
 
-export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
-  const [step, setStep] = useState(2); // step 1 (intake) is implicitly done: manual entry via "New Case"
+export default function PostCaseWizard({ onSubmitSuccess, onExit, currentUser }) {
+  const [step, setStep] = useState(1); // 1=intake, 2=category, 3=details
+  const [intakeMode, setIntakeMode] = useState("assistant"); // "assistant" | "scan"
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const { caseData, updateCase } = useCaseContext();
+
+  function applyDraft(draft) {
+    const matchedCounty = KENYAN_COUNTIES.find(
+      (c) => c.toLowerCase() === (draft.jurisdiction || "").toLowerCase().trim()
+    );
+    updateCase({
+      title: draft.title || caseData.title,
+      description: draft.description || caseData.description,
+      jurisdiction: matchedCounty || caseData.jurisdiction,
+      urgencyLevel: draft.urgency || caseData.urgencyLevel,
+      legalCategory: draft.category || caseData.legalCategory,
+    });
+    setStep(2);
+  }
 
   const handleSubmit = async () => {
     setSubmitError("");
@@ -236,9 +253,29 @@ export default function PostCaseWizard({ onSubmitSuccess, currentUser }) {
     }
   };
 
+  if (step === 1 && intakeMode === "assistant") {
+    return (
+      <AiAssistantScreen
+        onBack={onExit}
+        onSwitchToScan={() => setIntakeMode("scan")}
+        onSkipManual={() => setStep(2)}
+        onContinue={applyDraft}
+      />
+    );
+  }
+
+  if (step === 1 && intakeMode === "scan") {
+    return (
+      <ScanDocumentScreen
+        onBack={() => setIntakeMode("assistant")}
+        onUseInfo={applyDraft}
+      />
+    );
+  }
+
   return (
     <Screen>
-      <TitleBar title="Post a Case" />
+      <TitleBar title="Post a Case" onBack={() => (step === 2 ? setStep(1) : setStep(2))} />
       <div className="p-4 flex-1 flex flex-col">
         <StepDots current={step} />
         {step === 2 && <CategoryStep onNext={() => setStep(3)} />}
