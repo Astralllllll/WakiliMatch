@@ -10,27 +10,29 @@ const VALID_PAYLOAD = {
 };
 
 describe("validateLawyerProfilePayload", () => {
-  it("accepts a fully valid payload", () => {
-    expect(validateLawyerProfilePayload(VALID_PAYLOAD)).toEqual({});
+  it("accepts a fully valid payload and resolves the county", () => {
+    const { errors, resolvedCounty } = validateLawyerProfilePayload(VALID_PAYLOAD);
+    expect(errors).toEqual({});
+    expect(resolvedCounty).toBe("Nairobi");
   });
 
   it("rejects a missing biography", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "" });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "" });
     expect(errors.biography).toBeTruthy();
   });
 
   it("rejects a biography under 50 characters", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "Too short." });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "Too short." });
     expect(errors.biography).toMatch(/50 and 1000/);
   });
 
   it("rejects a biography over 1000 characters", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "A".repeat(1001) });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, biography: "A".repeat(1001) });
     expect(errors.biography).toMatch(/50 and 1000/);
   });
 
   it("rejects empty specializations", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, specializations: "" });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, specializations: "" });
     expect(errors.specializations).toBeTruthy();
   });
 
@@ -38,7 +40,7 @@ describe("validateLawyerProfilePayload", () => {
     // Regression guard: the shared validator must not restrict
     // specializations to the AI engine's 7 labels, or the existing web
     // onboarding flow (which sends labels like "Family Law") would break.
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, specializations: "Family Law, Property Law" });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, specializations: "Family Law, Property Law" });
     expect(errors.specializations).toBeUndefined();
   });
 
@@ -46,30 +48,42 @@ describe("validateLawyerProfilePayload", () => {
     const payloadWithoutCountyOrLanguages = { ...VALID_PAYLOAD };
     delete payloadWithoutCountyOrLanguages.county;
     delete payloadWithoutCountyOrLanguages.languages;
-    const errors = validateLawyerProfilePayload(payloadWithoutCountyOrLanguages);
+    const { errors, resolvedCounty } = validateLawyerProfilePayload(payloadWithoutCountyOrLanguages);
     expect(errors.county).toBeUndefined();
     expect(errors.languages).toBeUndefined();
+    expect(resolvedCounty).toBeNull();
+  });
+
+  it("resolves a county alias (Deliverable 4, bug 2)", () => {
+    const { errors, resolvedCounty } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, county: "Westlands" });
+    expect(errors.county).toBeUndefined();
+    expect(resolvedCounty).toBe("Nairobi");
+  });
+
+  it("rejects a county that doesn't resolve to a real place", () => {
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, county: "home" });
+    expect(errors.county).toBeTruthy();
   });
 
   it("rejects a negative years_of_experience", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: -1 });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: -1 });
     expect(errors.years_of_experience).toBeTruthy();
   });
 
   it("rejects years_of_experience over 60", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: 61 });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: 61 });
     expect(errors.years_of_experience).toBeTruthy();
   });
 
   it("accepts years_of_experience of exactly 0 (web's default when blank)", () => {
-    const errors = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: 0 });
+    const { errors } = validateLawyerProfilePayload({ ...VALID_PAYLOAD, years_of_experience: 0 });
     expect(errors.years_of_experience).toBeUndefined();
   });
 
   it("rejects a missing years_of_experience", () => {
     const payloadWithoutYears = { ...VALID_PAYLOAD };
     delete payloadWithoutYears.years_of_experience;
-    const errors = validateLawyerProfilePayload(payloadWithoutYears);
+    const { errors } = validateLawyerProfilePayload(payloadWithoutYears);
     expect(errors.years_of_experience).toBeTruthy();
   });
 });

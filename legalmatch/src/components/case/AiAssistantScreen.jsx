@@ -25,15 +25,54 @@ export default function AiAssistantScreen({ onBack, onSwitchToScan, onSkipManual
   const [drafting, setDrafting] = useState(false);
   const [draft, setDraft] = useState(null);
   const [error, setError] = useState("");
+  // Deliverable 4, bug 2: the location answer is re-asked once if it
+  // doesn't resolve to a real county, instead of being stored as-is -
+  // never a third time, matching "leave it empty and let the user pick
+  // manually" (the case form's own county picker is the fallback).
+  const [clarifyPrompt, setClarifyPrompt] = useState(null);
 
   const messages = [];
   QUESTIONS.slice(0, step + 1).forEach((q, i) => {
     messages.push({ role: "ai", text: q.prompt, key: `q-${i}` });
     if (answers[q.key] !== undefined) messages.push({ role: "me", text: answers[q.key], key: `a-${i}` });
   });
+  if (clarifyPrompt) {
+    messages.push({ role: "ai", text: clarifyPrompt.question, key: "clarify-q" });
+    if (clarifyPrompt.answered) messages.push({ role: "me", text: clarifyPrompt.answered, key: "clarify-a" });
+  }
+
+  async function submitDraft(theAnswers, { allowClarify }) {
+    setDrafting(true);
+    setError("");
+    const result = await draftCaseFromAssistant(theAnswers);
+    setDrafting(false);
+    if (!result.ok) {
+      setError(result.error || "Could not draft your case automatically — you can still continue manually.");
+      return;
+    }
+    if (allowClarify && result.draft.jurisdictionNeedsClarification) {
+      const candidates = result.draft.jurisdictionCandidates || [];
+      const question = candidates.length > 1
+        ? `Did this happen in ${candidates.join(" or ")}?`
+        : "Which town or county is that in? For example Nairobi, Mombasa or Kiambu.";
+      setClarifyPrompt({ question, answered: null });
+      return;
+    }
+    setDraft(result.draft);
+  }
 
   async function handleSend() {
     if (!input.trim() || drafting) return;
+
+    if (clarifyPrompt && !clarifyPrompt.answered) {
+      const retryAnswers = { ...answers, location: input.trim() };
+      setAnswers(retryAnswers);
+      setClarifyPrompt((prev) => ({ ...prev, answered: input.trim() }));
+      setInput("");
+      await submitDraft(retryAnswers, { allowClarify: false });
+      return;
+    }
+
     const key = QUESTIONS[step].key;
     const nextAnswers = { ...answers, [key]: input.trim() };
     setAnswers(nextAnswers);
@@ -44,15 +83,7 @@ export default function AiAssistantScreen({ onBack, onSwitchToScan, onSkipManual
       return;
     }
 
-    setDrafting(true);
-    setError("");
-    const result = await draftCaseFromAssistant(nextAnswers);
-    setDrafting(false);
-    if (!result.ok) {
-      setError(result.error || "Could not draft your case automatically — you can still continue manually.");
-      return;
-    }
-    setDraft(result.draft);
+    await submitDraft(nextAnswers, { allowClarify: true });
   }
 
   return (

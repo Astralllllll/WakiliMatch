@@ -14,6 +14,8 @@
  * back - a real provider's prompt must enforce it explicitly.
  */
 
+import { resolveCounty } from './countyValidator.js';
+
 const LLM_PROVIDER = process.env.LLM_PROVIDER || 'mock';
 
 const URGENT_KEYWORDS = ['arrest', 'evict', 'urgent', 'immediately', 'today', 'deadline', 'custody', 'detained'];
@@ -36,10 +38,20 @@ function draftCaseFromAnswersMock(answers) {
   const lower = whatHappened.toLowerCase();
   const urgency = URGENT_KEYWORDS.some((k) => lower.includes(k)) ? 'high' : 'medium';
 
+  // Deliverable 4, bug 2: the raw answer to "where" used to be stored
+  // verbatim as the county ("home" -> jurisdiction "home"). Every answer is
+  // now resolved against the real county list + alias map first; an
+  // unresolved or ambiguous answer never becomes the jurisdiction - the
+  // caller (the chat UI) re-asks using jurisdictionCandidates/
+  // jurisdictionNeedsClarification instead.
+  const locationResolution = location ? resolveCounty(location) : { status: 'unresolved', county: null, candidates: [] };
+
   return {
     title,
     description,
-    jurisdiction: location || null,
+    jurisdiction: locationResolution.status === 'resolved' ? locationResolution.county : null,
+    jurisdictionNeedsClarification: location ? locationResolution.status !== 'resolved' : false,
+    jurisdictionCandidates: locationResolution.candidates,
     urgency,
     isAiGenerated: false, // mock = templated from the user's own words, never generated
   };

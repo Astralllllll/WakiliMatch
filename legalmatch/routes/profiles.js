@@ -28,7 +28,8 @@ router.post('/lawyer', async (req, res) => {
     specializations,
     years_of_experience,
     firm_name,
-    county, // lawyer's own practice county (Android onboarding only today — see validator's doc comment)
+    // county is read from req.body directly by validateLawyerProfilePayload,
+    // which also resolves it (Deliverable 4, bug 2) - not destructured here.
 
     // Step 3 — Case history & fees
     // NOTE: these are self-reported summary fields filled in once at
@@ -48,7 +49,7 @@ router.post('/lawyer', async (req, res) => {
     return res.status(400).json({ error: "user_id and lsk_registration_number are required." });
   }
 
-  const validationErrors = validateLawyerProfilePayload(req.body);
+  const { errors: validationErrors, resolvedCounty } = validateLawyerProfilePayload(req.body);
   if (Object.keys(validationErrors).length) {
     return res.status(400).json({ error: "Invalid profile data.", fieldErrors: validationErrors });
   }
@@ -143,7 +144,7 @@ router.post('/lawyer', async (req, res) => {
         ? Number(success_rate) : null,
       price_guidance        ?? null,
       profile_text           ?? null,
-      county                ?? null,
+      resolvedCounty,
     ];
 
     const result = await pool.query(queryText, values);

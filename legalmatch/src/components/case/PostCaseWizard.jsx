@@ -170,13 +170,14 @@ export default function PostCaseWizard({ onSubmitSuccess, onExit, currentUser })
   const { caseData, updateCase } = useCaseContext();
 
   function applyDraft(draft) {
-    const matchedCounty = KENYAN_COUNTIES.find(
-      (c) => c.toLowerCase() === (draft.jurisdiction || "").toLowerCase().trim()
-    );
+    // draft.jurisdiction is already resolved against the real county list
+    // server-side (services/countyValidator.js, Deliverable 4 bug 2) - it's
+    // either a real canonical county name or null, never raw free text, so
+    // no re-matching is needed here any more.
     updateCase({
       title: draft.title || caseData.title,
       description: draft.description || caseData.description,
-      jurisdiction: matchedCounty || caseData.jurisdiction,
+      jurisdiction: draft.jurisdiction || caseData.jurisdiction,
       urgencyLevel: draft.urgency || caseData.urgencyLevel,
       legalCategory: draft.category || caseData.legalCategory,
     });

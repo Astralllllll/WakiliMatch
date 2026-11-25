@@ -1,6 +1,7 @@
 import express from 'express';
 import pool from '../db.js';
 import { summarizeCase } from '../services/aiAssist.js';
+import { resolveCounty } from '../services/countyValidator.js';
 
 const router = express.Router();
 
@@ -95,6 +96,23 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: "Missing required fields." });
   }
 
+  // Deliverable 4, bug 2: never let free text reach the jurisdiction
+  // column. Both web and Android's own case forms already only offer a
+  // picker over the real county list, so a legitimate submission always
+  // resolves - this only rejects something malformed or sent directly
+  // against the API.
+  let resolvedJurisdiction = null;
+  if (jurisdiction) {
+    const resolution = resolveCounty(jurisdiction);
+    if (resolution.status !== 'resolved') {
+      return res.status(400).json({
+        error: "jurisdiction must be a recognized Kenyan county.",
+        field: "jurisdiction",
+      });
+    }
+    resolvedJurisdiction = resolution.county;
+  }
+
   try {
     // Stored once at creation so lawyers can see a summary pre-confirmation
     // without the full description (privacy gating, brief section B5).
@@ -124,7 +142,7 @@ router.post('/', async (req, res) => {
       issue_title,
       issue_description,
       legal_category || null,
-      jurisdiction || null,
+      resolvedJurisdiction,
       urgency_level || null,
       budget_range || null,
       budget_min !== undefined && budget_min !== null && budget_min !== "" ? Number(budget_min) : null,

@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import { KENYAN_COUNTIES } from "../../services/countyValidator.js";
 
 const CaseContext = createContext(null);
 
@@ -59,11 +60,7 @@ export const LEGAL_CATEGORIES = [
   { value: "immigration", label: "Immigration" },
 ];
 
-export const KENYAN_COUNTIES = [
-  "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret",
-  "Nyeri", "Meru", "Thika", "Machakos", "Kisii",
-  "Garissa", "Kakamega", "Kilifi", "Lamu", "Marsabit",
-];
+export { KENYAN_COUNTIES };
 
 export const URGENCY_LEVELS = [
   { value: "low", label: "Not urgent", description: "Within the next few months" },

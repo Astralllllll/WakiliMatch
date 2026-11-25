@@ -18,14 +18,18 @@
  * own client-side validation, but NOT enforced here: the existing web
  * onboarding (`LawyerOnboarding.jsx`) never collects a county at all and
  * never requires languages, so making either required server-side would
- * reject real, already-working web submissions. Only format/bounds are
- * checked when a value is present.
+ * reject real, already-working web submissions. When a county IS given, it
+ * goes through the same resolveCounty() validator as everywhere else
+ * (Deliverable 4, bug 2) rather than being stored as free text.
  */
+import { resolveCounty } from './countyValidator.js';
 
 const BIOGRAPHY_MIN = 50;
 const BIOGRAPHY_MAX = 1000;
 const MAX_YEARS_EXPERIENCE = 60;
+const MAX_FREE_TEXT = 255;
 
+/** @returns {{errors: object, resolvedCounty: string|null}} */
 export function validateLawyerProfilePayload(payload) {
   const errors = {};
   const p = payload || {};
@@ -41,10 +45,20 @@ export function validateLawyerProfilePayload(payload) {
     errors.specializations = 'Select at least one practice area.';
   }
 
-  const MAX_FREE_TEXT = 255;
-  if (p.county !== undefined && p.county !== null && String(p.county).length > MAX_FREE_TEXT) {
-    errors.county = `County must be ${MAX_FREE_TEXT} characters or fewer.`;
+  let resolvedCounty = null;
+  if (p.county !== undefined && p.county !== null && String(p.county).trim() !== '') {
+    if (String(p.county).length > MAX_FREE_TEXT) {
+      errors.county = `County must be ${MAX_FREE_TEXT} characters or fewer.`;
+    } else {
+      const resolution = resolveCounty(p.county);
+      if (resolution.status !== 'resolved') {
+        errors.county = 'County must be a recognized Kenyan county.';
+      } else {
+        resolvedCounty = resolution.county;
+      }
+    }
   }
+
   if (p.languages !== undefined && p.languages !== null && String(p.languages).length > MAX_FREE_TEXT) {
     errors.languages = `Languages must be ${MAX_FREE_TEXT} characters or fewer.`;
   }
@@ -58,7 +72,7 @@ export function validateLawyerProfilePayload(payload) {
     }
   }
 
-  return errors;
+  return { errors, resolvedCounty };
 }
 
 export function isLawyerProfileComplete(profile) {
