@@ -58,6 +58,12 @@ const LAWYER_MATCH = {
 };
 
 async function mockBackend(page) {
+  // Deliverable 4, section 5: the adaptive assistant is now turn-by-turn
+  // (POST /api/ai/assistant-turn), not one fixed-script draft-case call -
+  // this mocks a short two-turn conversation (one question, then the
+  // draft), matching how AiAssistantScreen.jsx actually drives it now.
+  let assistantTurnCount = 0;
+
   await page.route("**/api/**", async (route) => {
     const req = route.request();
     const url = new URL(req.url());
@@ -70,19 +76,40 @@ async function mockBackend(page) {
     if (p === `/api/issues/client/${USER.id}` && method === "GET") {
       return route.fulfill({ json: { issues: [] } }); // first-time client -> straight into the wizard
     }
-    if (p === "/api/ai/draft-case" && method === "POST") {
+    if (p === "/api/ai/assistant-turn" && method === "POST") {
+      assistantTurnCount += 1;
+      if (assistantTurnCount === 1) {
+        return route.fulfill({
+          json: {
+            reply: 'Got it - "My landlord locked my shop because I was late with rent". Which town or county is the property in?',
+            state: {
+              facts: { what_happened: "My landlord locked my shop because I was late with rent", area: "Land & Property", other_party: "landlord" },
+              askedSlots: { county: 1 },
+              turnsAsked: 1,
+              lastAskedSlot: "county",
+              bankArea: "Land & Property",
+            },
+            readyToDraft: false,
+          },
+        });
+      }
       return route.fulfill({
         json: {
-          title: "Landlord locked my shop over late rent",
-          description:
-            "My landlord locked my shop because I was late with rent. This happened around March 2024. " +
-            "Regarding notice or severance: No notice was given before the lock-out.",
-          jurisdiction: "Nairobi",
-          urgency: "medium",
-          isAiGenerated: false,
-          category: "property",
-          categorySource: "ai-engine",
-          matchedArea: "Land & Property",
+          reply: "Drafted your case as Land & Property, Nairobi. Review before continuing?",
+          state: { facts: {}, askedSlots: {}, turnsAsked: 1 },
+          readyToDraft: true,
+          draft: {
+            title: "Landlord locked my shop over late rent",
+            description:
+              "My landlord locked my shop because I was late with rent. Other party: landlord.",
+            jurisdiction: "Nairobi",
+            jurisdictionNeedsClarification: false,
+            jurisdictionCandidates: [],
+            urgency: "medium",
+            isAiGenerated: false,
+            category: "property",
+            matchedArea: "Land & Property",
+          },
         },
       });
     }
@@ -139,8 +166,6 @@ test("login -> AI assistant -> case -> results -> profile -> confirm", async ({ 
 
   const answers = [
     "My landlord locked my shop because I was late with rent",
-    "March 2024",
-    "No notice was given",
     "Nairobi",
   ];
   for (const answer of answers) {

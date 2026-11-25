@@ -1,6 +1,7 @@
 import express from 'express';
-import { draftCaseFromAnswers, LLM_PROVIDER } from '../services/aiAssist.js';
-import { suggestCategoryFromText } from '../services/aiMatchingClient.js';
+import { LLM_PROVIDER } from '../services/aiAssist.js';
+import { AREA_TO_CATEGORY } from '../services/aiMatchingClient.js';
+import { runAssistantTurn, buildDraftFromFacts, CASE_FACT_SLOTS } from '../services/assistantEngine.js';
 
 const router = express.Router();
 
@@ -10,30 +11,55 @@ router.get('/status', (_req, res) => {
   res.json({ provider: LLM_PROVIDER });
 });
 
-// POST: AI Assistant chat intake -> draft case fields. The free-text
-// answer is also sent to the AI service's real semantic engine for a
-// category suggestion; everything else here is templated, not generated.
-router.post('/draft-case', async (req, res) => {
-  const { answers } = req.body || {};
+// POST: one turn of the adaptive AI Assistant chat (Deliverable 4,
+// section 5 - replaces the old fixed four-question script). The client
+// carries conversation state (facts/askedSlots/turnsAsked/lastAskedSlot)
+// across turns and sends it back each time, same stateless-server pattern
+// as the rest of this app (no session/conversation store exists).
+router.post('/assistant-turn', async (req, res) => {
+  const { state, message } = req.body || {};
 
-  if (!answers || typeof answers !== 'object') {
-    return res.status(400).json({ error: 'answers object is required.' });
+  if (typeof message !== 'string') {
+    return res.status(400).json({ error: 'message is required.' });
   }
 
   try {
-    const draft = draftCaseFromAnswers(answers);
-    const { category, area } = await suggestCategoryFromText(answers.whatHappened || '');
+    const turn = await runAssistantTurn(state || {}, message);
 
+    if (!turn.readyToDraft) {
+      return res.json({
+        reply: turn.reply,
+        state: {
+          facts: turn.facts,
+          askedSlots: turn.askedSlots,
+          turnsAsked: turn.turnsAsked,
+          lastAskedSlot: turn.lastAskedSlot,
+          bankArea: turn.bankArea,
+        },
+        readyToDraft: false,
+      });
+    }
+
+    const draft = buildDraftFromFacts(turn.facts);
     return res.json({
-      ...draft,
-      category,
-      categorySource: category ? 'ai-engine' : null,
-      matchedArea: area,
+      reply: turn.reply,
+      state: { facts: turn.facts, askedSlots: turn.askedSlots, turnsAsked: turn.turnsAsked, bankArea: turn.bankArea },
+      readyToDraft: true,
+      draft: {
+        ...draft,
+        category: draft.matchedArea ? AREA_TO_CATEGORY[draft.matchedArea] || null : null,
+      },
     });
   } catch (err) {
-    console.error('Error drafting case from assistant answers:', err.message);
-    return res.status(500).json({ error: 'Server error while drafting your case.' });
+    console.error('Error running assistant turn:', err.message);
+    return res.status(500).json({ error: 'Server error while continuing the conversation.' });
   }
+});
+
+// GET: the case_facts slot names, for any client that wants to render
+// them generically rather than hardcoding the list.
+router.get('/assistant-slots', (_req, res) => {
+  res.json({ slots: CASE_FACT_SLOTS });
 });
 
 export default router;

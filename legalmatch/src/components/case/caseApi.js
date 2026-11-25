@@ -111,10 +111,19 @@ export async function getAiStatus() {
   }
 }
 
-export async function draftCaseFromAssistant(answers) {
-  const result = await postJson("/api/ai/draft-case", { answers });
+// Deliverable 4, section 5: one turn of the adaptive AI Assistant chat.
+// `state` is whatever the previous turn returned (empty object on the
+// first call) - the server is stateless, so the client carries it.
+export async function runAssistantTurn(state, message) {
+  const result = await postJson("/api/ai/assistant-turn", { state, message });
   if (!result.ok) return { ok: false, error: result.error };
-  return { ok: true, draft: result.data };
+  return {
+    ok: true,
+    reply: result.data?.reply,
+    state: result.data?.state,
+    readyToDraft: Boolean(result.data?.readyToDraft),
+    draft: result.data?.draft,
+  };
 }
 
 export async function getLawyerPastCases(lawyerId) {
