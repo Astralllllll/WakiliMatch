@@ -227,7 +227,7 @@ async function seed() {
            biography = EXCLUDED.biography,
            specializations = EXCLUDED.specializations,
            is_verified = true`,
-        [userId, l.lskNumber, l.fullName, l.biography, l.specializations, l.yearsOfExperience, l.courts, l.academicQualifications, l.priceGuidance, l.successRate]
+        [userId, l.lskNumber, l.fullName, l.biography, l.specializations, l.yearsOfExperience, l.courts, l.academicQualifications, l.priceGuidance, Number(String(l.successRate).replace('%', ''))]
       );
     }
     await client.query("COMMIT");
