@@ -26,7 +26,7 @@ function XaiCard({ xai }) {
   const { matched_area, precedent_count, top_precedent, explanation } = xai;
 
   return (
-    <div className="border border-gold rounded-md px-3 py-2.5 mb-3 bg-[#FFFDF5]">
+    <div data-testid="xai-card" className="border border-gold rounded-md px-3 py-2.5 mb-3 bg-[#FFFDF5]">
       <div className="flex items-center gap-1.5 mb-1.5">
         <AIBadge soft>✦ AI EXPLANATION</AIBadge>
         {matched_area && <span className="text-[10.5px] font-semibold text-navy">{matched_area}</span>}
@@ -289,13 +289,13 @@ export default function MatchResults({ onPostNewCase, onBackToClientDashboard })
         </SummaryBox>
 
         {fetching ? (
-          <div className="flex flex-col gap-2.5" aria-busy="true">
+          <div data-testid="match-skeleton" className="flex flex-col gap-2.5" aria-busy="true">
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-ice rounded-md h-28 animate-pulse" style={{ opacity: 1 - i * 0.15 }} />
             ))}
           </div>
         ) : fetchError ? (
-          <div className="border border-border rounded-md p-4 text-center">
+          <div data-testid="match-fetch-error" className="border border-border rounded-md p-4 text-center">
             <p className="text-[13px] font-semibold text-navy mb-1">Couldn't load your matches</p>
             <p className="text-[12px] text-slate mb-3">Check your connection and try again.</p>
             <Button onClick={loadExistingMatches}>Retry</Button>

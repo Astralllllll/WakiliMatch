@@ -4,6 +4,16 @@ A 3-6 minute walkthrough of the AI matching engine, run live against the real
 local stack (PostgreSQL + the Express backend + the Python AI service) -
 every number below came out of the actual pipeline, not a mock.
 
+For the full client journey through the *new UI* (login, AI Assistant
+intake, Match Results with the XAI card, Lawyer Profile, Confirm
+Selection), see the screenshots in `docs/screens/`, produced by
+`legalmatch/tests/e2e/demo-flow.spec.js` (`npm run test:e2e` - mocks the
+backend at the network layer, so it runs without a live database; see
+`legalmatch/README.md`'s Testing section). Component-level behaviour for
+the XAI card and every Match Results state (empty/gibberish/off-topic/
+unsupported-language/no-lawyers/loading/offline) is covered by
+`npm run test` (`legalmatch/src/components/case/MatchResults.test.jsx`).
+
 ## Setup (once)
 
 ```powershell
