@@ -21,10 +21,19 @@ val LEGAL_CATEGORIES = listOf(
     LegalCategoryOption("immigration", "Immigration"),
 )
 
+// All 47 real Kenyan counties (Deliverable 4, bug 2) - kept in sync by hand
+// with legalmatch/services/countyValidator.js's KENYAN_COUNTIES, the
+// canonical source. The previous 15-entry list wrongly listed Eldoret and
+// Thika (towns, not counties) as if they were their own counties.
 val KENYAN_COUNTIES = listOf(
-    "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret",
-    "Nyeri", "Meru", "Thika", "Machakos", "Kisii",
-    "Garissa", "Kakamega", "Kilifi", "Lamu", "Marsabit",
+    "Nairobi", "Mombasa", "Kwale", "Kilifi", "Tana River", "Lamu",
+    "Taita-Taveta", "Garissa", "Wajir", "Mandera", "Marsabit", "Isiolo",
+    "Meru", "Tharaka-Nithi", "Embu", "Kitui", "Machakos", "Makueni",
+    "Nyandarua", "Nyeri", "Kirinyaga", "Murang'a", "Kiambu", "Turkana",
+    "West Pokot", "Samburu", "Trans Nzoia", "Uasin Gishu", "Elgeyo-Marakwet",
+    "Nandi", "Baringo", "Laikipia", "Nakuru", "Narok", "Kajiado", "Kericho",
+    "Bomet", "Kakamega", "Vihiga", "Bungoma", "Busia", "Siaya", "Kisumu",
+    "Homa Bay", "Migori", "Kisii", "Nyamira",
 )
 
 // LawyerProfiles.specializations is free TEXT (no CHECK constraint), so

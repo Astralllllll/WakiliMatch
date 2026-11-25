@@ -50,19 +50,65 @@ fun AiAssistantScreen(
     var drafting by remember { mutableStateOf(false) }
     var draft by remember { mutableStateOf<DraftCaseResponse?>(null) }
     var error by remember { mutableStateOf<String?>(null) }
+    // Deliverable 4, bug 2: re-ask once if the location answer doesn't
+    // resolve to a real county, never a third time (the case form's own
+    // county picker is the fallback after that).
+    var clarifyQuestion by remember { mutableStateOf<String?>(null) }
+    var clarifyAnswer by remember { mutableStateOf<String?>(null) }
     val scope = rememberCoroutineScope()
 
-    val messages = remember(step, answers.toMap()) {
+    val messages = remember(step, answers.toMap(), clarifyQuestion, clarifyAnswer) {
         val list = mutableListOf<ChatMessage>()
         for (i in 0..step) {
             list.add(ChatMessage(QUESTIONS[i].prompt, ChatRole.AI))
             answers[QUESTIONS[i].key]?.let { list.add(ChatMessage(it, ChatRole.ME)) }
         }
+        clarifyQuestion?.let { q ->
+            list.add(ChatMessage(q, ChatRole.AI))
+            clarifyAnswer?.let { list.add(ChatMessage(it, ChatRole.ME)) }
+        }
         list
+    }
+
+    fun submitDraft(theAnswers: Map<String, String>, allowClarify: Boolean) {
+        drafting = true
+        error = null
+        scope.launch {
+            try {
+                val resp = withContext(Dispatchers.IO) { apiService.draftCase(DraftCaseRequest(theAnswers)) }
+                val body = resp.body()
+                if (!resp.isSuccessful || body == null) {
+                    error = "Could not draft your case automatically — you can still continue manually."
+                    return@launch
+                }
+                if (allowClarify && body.jurisdictionNeedsClarification) {
+                    clarifyQuestion = if (body.jurisdictionCandidates.size > 1) {
+                        "Did this happen in ${body.jurisdictionCandidates.joinToString(" or ")}?"
+                    } else {
+                        "Which town or county is that in? For example Nairobi, Mombasa or Kiambu."
+                    }
+                    return@launch
+                }
+                draft = body
+            } catch (e: Exception) {
+                error = "Could not draft your case automatically — you can still continue manually."
+            } finally {
+                drafting = false
+            }
+        }
     }
 
     fun send() {
         if (input.isBlank() || drafting) return
+
+        if (clarifyQuestion != null && clarifyAnswer == null) {
+            answers["location"] = input.trim()
+            clarifyAnswer = input.trim()
+            input = ""
+            submitDraft(answers.toMap(), allowClarify = false)
+            return
+        }
+
         val key = QUESTIONS[step].key
         answers[key] = input.trim()
         input = ""
@@ -72,22 +118,7 @@ fun AiAssistantScreen(
             return
         }
 
-        drafting = true
-        error = null
-        scope.launch {
-            try {
-                val resp = withContext(Dispatchers.IO) { apiService.draftCase(DraftCaseRequest(answers.toMap())) }
-                if (resp.isSuccessful && resp.body() != null) {
-                    draft = resp.body()
-                } else {
-                    error = "Could not draft your case automatically — you can still continue manually."
-                }
-            } catch (e: Exception) {
-                error = "Could not draft your case automatically — you can still continue manually."
-            } finally {
-                drafting = false
-            }
-        }
+        submitDraft(answers.toMap(), allowClarify = true)
     }
 
     AppScreen {

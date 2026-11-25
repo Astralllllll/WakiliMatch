@@ -302,6 +302,11 @@ data class DraftCaseResponse(
     val title: String? = null,
     val description: String? = null,
     val jurisdiction: String? = null,
+    // Deliverable 4, bug 2: jurisdiction is already resolved against the
+    // real county list server-side - these two fields are set instead of
+    // jurisdiction when the location answer couldn't be resolved cleanly.
+    val jurisdictionNeedsClarification: Boolean = false,
+    val jurisdictionCandidates: List<String> = emptyList(),
     val urgency: String? = null,
     val isAiGenerated: Boolean = false,
     val category: String? = null,

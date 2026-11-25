@@ -283,7 +283,8 @@ private fun applyDraft(appState: AppState, draft: com.wakilimatch.app.data.Draft
     draft.description?.let { cs.description = it }
     draft.urgency?.let { cs.urgencyLevel = it }
     draft.category?.let { cs.legalCategory = it }
-    draft.jurisdiction?.let { location ->
-        com.wakilimatch.app.data.KENYAN_COUNTIES.find { it.equals(location, ignoreCase = true) }?.let { cs.jurisdiction = it }
-    }
+    // draft.jurisdiction is already resolved against the real county list
+    // server-side (services/countyValidator.js, Deliverable 4 bug 2) - it's
+    // either a real canonical county name or null, never raw free text.
+    draft.jurisdiction?.let { cs.jurisdiction = it }
 }
