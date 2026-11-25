@@ -6,16 +6,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.wakilimatch.app.ui.theme.Navy
-import com.wakilimatch.app.ui.theme.White
+import com.wakilimatch.app.ui.theme.Background
+import com.wakilimatch.app.ui.theme.PrimaryLight
+import com.wakilimatch.app.ui.theme.Surface
+import com.wakilimatch.app.ui.theme.TextPrimary
 
-/** Full-screen white content area (brief section B1) - the mobile-only
+/** Full-screen content area (brief section B1) - the mobile-only
  * equivalent of the web app's Screen.jsx (no desktop-centering concern on
- * a native app, so this is just the content column). */
+ * a native app, so this is just the content column).
+ *
+ * Every screen in the app renders through here, so this is also the single
+ * place that keeps content clear of the status bar / display cutout
+ * (Dynamic-Island-style notches included) and the bottom navigation bar:
+ * `windowInsetsPadding(WindowInsets.systemBars)` reserves exactly the real
+ * inset on whatever device/OS version is running (zero on a device with no
+ * cutout and no gesture bar), then a flat 8dp is added below the top inset
+ * so headers never sit flush against it. */
 @Composable
 fun AppScreen(
     modifier: Modifier = Modifier,
@@ -24,12 +33,14 @@ fun AppScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(White),
+            .background(Background)
+            .windowInsetsPadding(WindowInsets.systemBars)
+            .padding(top = 8.dp),
         content = content,
     )
 }
 
-/** Navy title bar: back chip left, title centre (uppercase bold,
+/** Header bar: back chip left, title centre (uppercase bold,
  * letter-spaced), action chip right (brief section B2). */
 @Composable
 fun TitleBar(
@@ -42,7 +53,7 @@ fun TitleBar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Navy)
+            .background(Surface)
             .padding(horizontal = 4.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -53,7 +64,7 @@ fun TitleBar(
         }
         Text(
             text = title.uppercase(),
-            color = White,
+            color = TextPrimary,
             fontWeight = FontWeight.Bold,
             fontSize = 13.sp,
             letterSpacing = 0.8.sp,
@@ -71,6 +82,6 @@ fun TitleBar(
 @Composable
 private fun ChipButton(text: String, onClick: () -> Unit) {
     androidx.compose.material3.TextButton(onClick = onClick) {
-        Text(text = text, color = Color.White.copy(alpha = 0.9f), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Text(text = text, color = PrimaryLight.copy(alpha = 0.9f), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
     }
 }

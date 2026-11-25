@@ -31,10 +31,10 @@ fun PrimaryButton(
         enabled = enabled && !loading,
         modifier = modifier.fillMaxWidth().height(48.dp),
         shape = RoundedCornerShape(8.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Navy, contentColor = White, disabledContainerColor = Navy.copy(alpha = 0.5f)),
+        colors = ButtonDefaults.buttonColors(containerColor = Primary, contentColor = TextOnPrimary, disabledContainerColor = PrimaryDark),
     ) {
         if (loading) {
-            CircularProgressIndicator(modifier = Modifier.size(18.dp), color = White, strokeWidth = 2.dp)
+            CircularProgressIndicator(modifier = Modifier.size(18.dp), color = TextOnPrimary, strokeWidth = 2.dp)
         } else {
             Text(text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
         }
@@ -48,8 +48,8 @@ fun OutlineButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
         enabled = enabled,
         modifier = modifier.fillMaxWidth().height(48.dp),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, BorderStrong),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = Navy),
+        border = BorderStroke(1.dp, PrimaryLight),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = PrimaryLight),
     ) {
         Text(text, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
     }
@@ -65,12 +65,12 @@ fun Field(
     content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Navy)
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
         content()
         if (error != null) {
-            Text(error, fontSize = 12.sp, color = ErrorRed)
+            Text(error, fontSize = 12.sp, color = Error)
         } else if (hint != null) {
-            Text(hint, fontSize = 12.sp, color = Slate)
+            Text(hint, fontSize = 12.sp, color = TextSecondary)
         }
     }
 }
@@ -91,7 +91,7 @@ fun AppTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
-        placeholder = placeholder?.let { { Text(it, color = Slate) } },
+        placeholder = placeholder?.let { { Text(it, color = TextSecondary) } },
         isError = isError,
         singleLine = singleLine,
         minLines = minLines,
@@ -99,11 +99,14 @@ fun AppTextField(
         visualTransformation = visualTransformation,
         shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Navy,
-            unfocusedBorderColor = BorderStrong,
-            errorBorderColor = ErrorRed,
-            focusedContainerColor = White,
-            unfocusedContainerColor = White,
+            focusedBorderColor = PrimaryLight,
+            unfocusedBorderColor = Border,
+            errorBorderColor = Error,
+            focusedContainerColor = SurfaceRaised,
+            unfocusedContainerColor = SurfaceRaised,
+            focusedTextColor = TextPrimary,
+            unfocusedTextColor = TextPrimary,
+            cursorColor = PrimaryLight,
         ),
     )
 }
@@ -111,9 +114,9 @@ fun AppTextField(
 /** Selectable pill, e.g. legal-category chooser (brief section B2). */
 @Composable
 fun Pill(label: String, active: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val bg = if (active) Navy else White
-    val fg = if (active) White else Navy
-    val border = if (active) Navy else BorderStrong
+    val bg = if (active) Primary else Surface
+    val fg = if (active) TextOnPrimary else TextPrimary
+    val border = if (active) Primary else Border
     OutlinedButton(
         onClick = onClick,
         modifier = modifier

@@ -2,20 +2,22 @@ package com.wakilimatch.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Design tokens (brief section B2) - kept in exact parity with the web
-// app's Tailwind @theme tokens (legalmatch/src/index.css), so both
-// clients read as one product.
-val Navy = Color(0xFF1B2A4A)
-val NavyDeep = Color(0xFF121D33)
-val Ice = Color(0xFFEDF2FA)
-val Gold = Color(0xFFC9A227)
-val GoldText = Color(0xFF8A6A00) // gold fails contrast as text on white - use this instead
-val Slate = Color(0xFF5B6B85)
-val BorderColor = Color(0xFFDCE3EF)
-val BorderStrong = Color(0xFFC7D0E3)
-val Body = Color(0xFF33404E)
-val White = Color(0xFFFFFFFF)
+// Design tokens - dark theme with a brand-gold accent (single source of
+// truth for every color in the app; no screen/component may hardcode a hex
+// value of its own).
+val Background = Color(0xFF0B0B0C)
+val Surface = Color(0xFF161514)
+val SurfaceRaised = Color(0xFF211F1C)
+val Border = Color(0xFF3A3324)
 
-// Semantic colors reused from existing screens (status chips etc.)
-val ErrorRed = Color(0xFFDC2626)
-val SuccessGreen = Color(0xFF15803D)
+val Primary = Color(0xFF997938) // primary buttons, active tab/chip, highlights
+val PrimaryLight = Color(0xFFC9A65A) // gold text/icons on dark backgrounds, links
+val PrimaryDark = Color(0xFF7A602C) // pressed/disabled primary buttons
+
+val TextPrimary = Color(0xFFF5F0E6)
+val TextSecondary = Color(0xFFA8A196)
+val TextOnPrimary = Color(0xFF0B0B0C) // labels on gold buttons
+
+val Success = Color(0xFF4E9A6B)
+val Error = Color(0xFFC0564B)
+val Warning = Color(0xFFD98E3A)

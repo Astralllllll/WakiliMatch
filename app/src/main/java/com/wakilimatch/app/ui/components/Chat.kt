@@ -24,18 +24,18 @@ fun ChatBubble(text: String, role: ChatRole, modifier: Modifier = Modifier) {
         else -> RoundedCornerShape(12.dp, 12.dp, 12.dp, 4.dp)
     }
     val bg = when (role) {
-        ChatRole.AI -> Ice
-        ChatRole.ME -> Navy
-        ChatRole.DRAFT -> White
+        ChatRole.AI -> SurfaceRaised
+        ChatRole.ME -> Primary
+        ChatRole.DRAFT -> Surface
     }
-    val fg = if (role == ChatRole.ME) White else Body
+    val fg = if (role == ChatRole.ME) TextOnPrimary else TextPrimary
 
     Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = alignment) {
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .background(bg, shape)
-                .then(if (role == ChatRole.DRAFT) Modifier.border(BorderStroke(1.dp, Gold), shape) else Modifier)
+                .then(if (role == ChatRole.DRAFT) Modifier.border(BorderStroke(1.dp, PrimaryLight), shape) else Modifier)
                 .padding(horizontal = 12.dp, vertical = 10.dp),
         ) {
             Text(text, color = fg, fontSize = 11.5.sp, lineHeight = 16.sp)

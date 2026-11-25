@@ -127,22 +127,22 @@ fun PostCaseDetailsScreen(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .background(if (selected) Ice else White, RoundedCornerShape(8.dp))
-                                .border(BorderStroke(1.dp, if (selected) Navy else BorderStrong), RoundedCornerShape(8.dp))
+                                .background(if (selected) SurfaceRaised else Surface, RoundedCornerShape(8.dp))
+                                .border(BorderStroke(1.dp, if (selected) Primary else Border), RoundedCornerShape(8.dp))
                                 .clickable { caseState.urgencyLevel = u.value }
                                 .padding(horizontal = 12.dp, vertical = 10.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Column {
-                                Text(u.label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = if (selected) Navy else Body)
-                                Text(u.description, fontSize = 11.sp, color = Slate)
+                                Text(u.label, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
+                                Text(u.description, fontSize = 11.sp, color = TextSecondary)
                             }
                             Box(
                                 modifier = Modifier
                                     .size(16.dp)
-                                    .background(if (selected) Navy else White, CircleShape)
-                                    .border(BorderStroke(2.dp, if (selected) Navy else BorderStrong), CircleShape),
+                                    .background(if (selected) Primary else Surface, CircleShape)
+                                    .border(BorderStroke(2.dp, if (selected) Primary else Border), CircleShape),
                             )
                         }
                     }
@@ -160,15 +160,15 @@ fun PostCaseDetailsScreen(
             Text(
                 "Details hidden from lawyers until you select one.",
                 fontSize = 10.5.sp,
-                color = Slate,
+                color = TextSecondary,
                 modifier = Modifier
                     .padding(top = 12.dp)
-                    .border(BorderStroke(1.dp, BorderStrong), RoundedCornerShape(6.dp))
+                    .border(BorderStroke(1.dp, Border), RoundedCornerShape(6.dp))
                     .padding(8.dp),
             )
 
             if (submitError != null) {
-                Text(submitError!!, fontSize = 12.sp, color = ErrorRed, modifier = Modifier.padding(top = 8.dp))
+                Text(submitError!!, fontSize = 12.sp, color = Error, modifier = Modifier.padding(top = 8.dp))
             }
             } // end scrollable content column
 

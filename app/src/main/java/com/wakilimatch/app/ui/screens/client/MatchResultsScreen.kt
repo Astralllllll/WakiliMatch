@@ -50,7 +50,7 @@ fun MatchResultsScreen(
                     Text(
                         "${caseState.matches.size} advocate${if (caseState.matches.size == 1) "" else "s"} found",
                         fontSize = 11.sp,
-                        color = Slate,
+                        color = TextSecondary,
                         modifier = Modifier.padding(bottom = 10.dp),
                     )
                     caseState.xai?.let { XaiCard(it) }
@@ -59,7 +59,7 @@ fun MatchResultsScreen(
                     }
                     if (caseState.matches.isEmpty()) {
                         if (status != "no_lawyers_found") {
-                            Text("No matches yet. Try broadening your description.", fontSize = 12.sp, color = Slate)
+                            Text("No matches yet. Try broadening your description.", fontSize = 12.sp, color = TextSecondary)
                         }
                     } else {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -74,7 +74,7 @@ fun MatchResultsScreen(
             Text(
                 DISCLAIMER,
                 fontSize = 10.sp,
-                color = Slate,
+                color = TextSecondary,
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
@@ -87,24 +87,24 @@ private fun XaiCard(xai: XaiBlock) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(androidx.compose.ui.graphics.Color(0xFFFFFDF5), RoundedCornerShape(10.dp))
-            .border(BorderStroke(1.dp, Gold), RoundedCornerShape(10.dp))
+            .background(SurfaceRaised, RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, PrimaryLight), RoundedCornerShape(10.dp))
             .padding(12.dp)
             .padding(bottom = 10.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             AIBadge(text = "✦ AI EXPLANATION", soft = true)
             xai.matched_area?.let {
-                Text(it, fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold, color = Navy, modifier = Modifier.padding(start = 6.dp))
+                Text(it, fontSize = 10.5.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary, modifier = Modifier.padding(start = 6.dp))
             }
         }
-        Text(xai.explanation, fontSize = 11.5.sp, color = Body, modifier = Modifier.padding(top = 6.dp, bottom = 6.dp))
+        Text(xai.explanation, fontSize = 11.5.sp, color = TextPrimary, modifier = Modifier.padding(top = 6.dp, bottom = 6.dp))
         xai.top_precedent?.let { tp ->
-            Text("Top precedent: ${tp.title ?: "—"}${tp.court?.let { " — $it" } ?: ""}${tp.year?.let { " ($it)" } ?: ""}", fontSize = 10.5.sp, color = Slate)
+            Text("Top precedent: ${tp.title ?: "—"}${tp.court?.let { " — $it" } ?: ""}${tp.year?.let { " ($it)" } ?: ""}", fontSize = 10.5.sp, color = TextSecondary)
             Text(
                 "${"%.1f".format(tp.similarity_pct)}% semantic similarity · ${xai.precedent_count} precedent${if (xai.precedent_count == 1) "" else "s"} considered",
                 fontSize = 10.5.sp,
-                color = Slate,
+                color = TextSecondary,
                 modifier = Modifier.padding(top = 2.dp),
             )
         }
@@ -123,21 +123,21 @@ private fun StatusMessageCard(status: String, message: String?, exampleQueries: 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(titles[status] ?: "Something went wrong", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Navy)
-        Text(message ?: "", fontSize = 12.5.sp, color = Slate, modifier = Modifier.padding(top = 6.dp, bottom = 10.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text(titles[status] ?: "Something went wrong", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+        Text(message ?: "", fontSize = 12.5.sp, color = TextSecondary, modifier = Modifier.padding(top = 6.dp, bottom = 10.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         if (exampleQueries.isNotEmpty()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Ice, RoundedCornerShape(8.dp))
+                    .background(SurfaceRaised, RoundedCornerShape(8.dp))
                     .padding(10.dp),
             ) {
-                Text("Try something like:", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Navy, modifier = Modifier.padding(bottom = 6.dp))
-                exampleQueries.forEach { q -> Text("\"$q\"", fontSize = 11.sp, color = Body, modifier = Modifier.padding(bottom = 4.dp)) }
+                Text("Try something like:", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.padding(bottom = 6.dp))
+                exampleQueries.forEach { q -> Text("\"$q\"", fontSize = 11.sp, color = TextPrimary, modifier = Modifier.padding(bottom = 4.dp)) }
             }
             Spacer(modifier = Modifier.height(10.dp))
         }
@@ -157,26 +157,26 @@ private fun LawyerResultCard(match: MatchResult, threshold: Double?, onOpenProfi
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
             .padding(12.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                 Box(
-                    modifier = Modifier.size(36.dp).background(Ice, CircleShape).clearAndSetSemantics {},
+                    modifier = Modifier.size(36.dp).background(SurfaceRaised, CircleShape).clearAndSetSemantics {},
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(initials(match.full_name), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Navy)
+                    Text(initials(match.full_name), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
                 }
                 Text(
                     match.full_name ?: "Advocate",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Navy,
+                    color = TextPrimary,
                     modifier = Modifier.padding(start = 8.dp).clickable { onOpenProfile(match) },
                 )
             }
-            Text("$scorePct%", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = GoldText)
+            Text("$scorePct%", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = PrimaryLight)
         }
 
         Row(modifier = Modifier.padding(top = 8.dp, bottom = 6.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -186,14 +186,14 @@ private fun LawyerResultCard(match: MatchResult, threshold: Double?, onOpenProfi
         }
 
         val reason = match.why?.plain_text ?: match.match_reason
-        if (reason != null) Text(reason, fontSize = 11.sp, color = Slate, modifier = Modifier.padding(bottom = 4.dp))
+        if (reason != null) Text(reason, fontSize = 11.sp, color = TextSecondary, modifier = Modifier.padding(bottom = 4.dp))
 
         if (match.why != null) {
             Text(
                 if (expanded) "Hide details" else "Why this lawyer?",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Navy,
+                color = PrimaryLight,
                 modifier = Modifier.clickable { expanded = !expanded }.padding(top = 4.dp),
             )
         }
@@ -201,17 +201,17 @@ private fun LawyerResultCard(match: MatchResult, threshold: Double?, onOpenProfi
         if (expanded && match.why != null) {
             Column(modifier = Modifier.padding(top = 10.dp)) {
                 if (match.why.precedent_cases.isNotEmpty()) {
-                    Text("LINKED PRECEDENTS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate)
+                    Text("LINKED PRECEDENTS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
                     match.why.precedent_cases.forEach { c ->
                         Text(
                             "${c.title}${c.similarity_pct?.let { " — %.1f%% similarity".format(it) } ?: ""}",
-                            fontSize = 10.5.sp, color = Body, modifier = Modifier.padding(top = 2.dp),
+                            fontSize = 10.5.sp, color = TextPrimary, modifier = Modifier.padding(top = 2.dp),
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 match.why.components?.let { comp ->
-                    Text("MATCH BREAKDOWN", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate, modifier = Modifier.padding(bottom = 4.dp))
+                    Text("MATCH BREAKDOWN", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary, modifier = Modifier.padding(bottom = 4.dp))
                     ComponentBar("Profile match", comp.profile_semantic)
                     ComponentBar("Case precedent", comp.precedent)
                     ComponentBar("Category", comp.category)
@@ -228,11 +228,11 @@ private fun ComponentBar(label: String, value: Double?) {
     if (value == null) return
     val pct = (value * 100).roundToInt()
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, fontSize = 10.5.sp, color = Slate, modifier = Modifier.width(90.dp))
-        Box(modifier = Modifier.weight(1f).height(6.dp).background(BorderColor, RoundedCornerShape(3.dp))) {
-            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth(pct / 100f).background(Navy, RoundedCornerShape(3.dp)))
+        Text(label, fontSize = 10.5.sp, color = TextSecondary, modifier = Modifier.width(90.dp))
+        Box(modifier = Modifier.weight(1f).height(6.dp).background(Border, RoundedCornerShape(3.dp))) {
+            Box(modifier = Modifier.fillMaxHeight().fillMaxWidth(pct / 100f).background(Primary, RoundedCornerShape(3.dp)))
         }
-        Text("$pct%", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Navy, modifier = Modifier.padding(start = 6.dp))
+        Text("$pct%", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.padding(start = 6.dp))
     }
 }
 

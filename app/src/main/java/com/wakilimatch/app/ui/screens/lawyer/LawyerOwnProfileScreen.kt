@@ -35,12 +35,12 @@ fun LawyerOwnProfileScreen(apiService: ApiService, currentUser: User, onBack: ()
         TitleBar(title = "Profile", onBack = onBack, actionLabel = "Edit", onAction = onEdit)
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             when {
-                error != null -> Text(error!!, fontSize = 12.sp, color = ErrorRed)
-                profile == null -> Text("Loading…", fontSize = 13.sp, color = Slate)
+                error != null -> Text(error!!, fontSize = 12.sp, color = Error)
+                profile == null -> Text("Loading…", fontSize = 13.sp, color = TextSecondary)
                 else -> {
                     val p = profile!!
-                    Text(p.full_name ?: currentUser.fullName ?: "Advocate", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = Navy)
-                    p.lsk_registration_number?.let { Text(it, fontSize = 12.sp, color = Slate, modifier = Modifier.padding(bottom = 10.dp)) }
+                    Text(p.full_name ?: currentUser.fullName ?: "Advocate", fontSize = 17.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                    p.lsk_registration_number?.let { Text(it, fontSize = 12.sp, color = TextSecondary, modifier = Modifier.padding(bottom = 10.dp)) }
 
                     val stats = buildList {
                         p.years_of_experience?.let { add(Stat("$it", "Years exp.")) }
@@ -50,10 +50,10 @@ fun LawyerOwnProfileScreen(apiService: ApiService, currentUser: User, onBack: ()
                     }
                     StatTriplet(stats, modifier = Modifier.padding(bottom = 14.dp))
 
-                    Text("ABOUT", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate)
-                    Text(p.biography ?: "No biography added yet.", fontSize = 12.5.sp, color = Body, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+                    Text("ABOUT", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+                    Text(p.biography ?: "No biography added yet.", fontSize = 12.5.sp, color = TextPrimary, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
 
-                    Text("SPECIALISATIONS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate, modifier = Modifier.padding(bottom = 6.dp))
+                    Text("SPECIALISATIONS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary, modifier = Modifier.padding(bottom = 6.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         (p.specializations ?: "").split(",").map { it.trim() }.filter { it.isNotBlank() }.take(4).forEach { Tag(it) }
                     }
@@ -76,7 +76,7 @@ fun LawyerOwnProfileScreen(apiService: ApiService, currentUser: User, onBack: ()
 @Composable
 private fun InfoCol(label: String, value: String?, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Slate)
-        Text(value ?: "—", fontSize = 12.sp, color = Navy, modifier = Modifier.padding(top = 2.dp))
+        Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+        Text(value ?: "—", fontSize = 12.sp, color = TextPrimary, modifier = Modifier.padding(top = 2.dp))
     }
 }

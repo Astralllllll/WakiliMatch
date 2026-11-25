@@ -1,21 +1,25 @@
 package com.wakilimatch.app.ui.screens.client
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.wakilimatch.app.R
 import com.wakilimatch.app.data.*
 import com.wakilimatch.app.ui.components.*
-import com.wakilimatch.app.ui.theme.ErrorRed
-import com.wakilimatch.app.ui.theme.Navy
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.Error
+import com.wakilimatch.app.ui.theme.TextPrimary
+import com.wakilimatch.app.ui.theme.TextSecondary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,16 +83,21 @@ fun ClientLoginScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
+            Image(
+                painter = painterResource(R.drawable.logo_wakilimatch),
+                contentDescription = "WakiliMatch",
+                modifier = Modifier.width(140.dp).align(Alignment.CenterHorizontally).padding(bottom = 4.dp),
+            )
             Text(
                 if (isLogin) "Welcome back" else "Create your account",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Navy,
+                color = TextPrimary,
             )
             Text(
                 if (isLogin) "Sign in to manage your cases and matches." else "Find qualified advocates for your legal needs.",
                 fontSize = 13.sp,
-                color = Slate,
+                color = TextSecondary,
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -125,7 +134,7 @@ fun ClientLoginScreen(
             }
 
             if (error != null) {
-                Text(error!!, color = ErrorRed, fontSize = 12.sp)
+                Text(error!!, color = Error, fontSize = 12.sp)
             }
 
             PrimaryButton(text = if (isLogin) "Sign in" else "Create account", onClick = ::submit, loading = loading)

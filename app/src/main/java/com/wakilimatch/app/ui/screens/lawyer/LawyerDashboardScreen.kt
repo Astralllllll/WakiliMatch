@@ -75,10 +75,10 @@ fun LawyerDashboardScreen(
     AppScreen {
         TitleBar(title = "Lawyer Dashboard")
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Advocate panel", fontSize = 12.sp, color = Slate)
+            Text("Advocate panel", fontSize = 12.sp, color = TextSecondary)
             Text(
                 currentUser.fullName ?: currentUser.email,
-                fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Navy,
+                fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
 
@@ -87,12 +87,12 @@ fun LawyerDashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(bottom = 14.dp)
-                        .border(BorderStroke(1.dp, Gold), RoundedCornerShape(10.dp))
+                        .border(BorderStroke(1.dp, PrimaryLight), RoundedCornerShape(10.dp))
                         .padding(12.dp),
                 ) {
                     Text(
                         "Complete your profile to appear in matches",
-                        fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, color = Navy,
+                        fontSize = 12.5.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary,
                         modifier = Modifier.padding(bottom = 8.dp),
                     )
                     OutlineButton(text = "Complete profile", onClick = onCompleteProfile)
@@ -114,10 +114,10 @@ fun LawyerDashboardScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 14.dp)
-                        .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+                        .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
                         .padding(12.dp),
                 ) {
-                    Text("QUICK STATS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate, modifier = Modifier.padding(bottom = 6.dp))
+                    Text("QUICK STATS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary, modifier = Modifier.padding(bottom = 6.dp))
                     StatRow("New inquiries", "${s.inquiriesCount}")
                     StatRow("Ongoing cases", "${s.ongoing.size}")
                     StatRow("Completed", "${s.completed.size}")
@@ -133,7 +133,7 @@ fun LawyerDashboardScreen(
 @Composable
 private fun StatRow(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, fontSize = 11.sp, color = Slate)
-        Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Navy)
+        Text(label, fontSize = 11.sp, color = TextSecondary)
+        Text(value, fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
     }
 }

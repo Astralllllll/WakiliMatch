@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wakilimatch.app.ui.components.AppScreen
 import com.wakilimatch.app.ui.components.PrimaryButton
-import com.wakilimatch.app.ui.theme.Navy
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.TextPrimary
+import com.wakilimatch.app.ui.theme.TextSecondary
 
 @Composable
 fun RoleSelectScreen(onClient: () -> Unit, onLawyer: () -> Unit) {
@@ -21,11 +21,11 @@ fun RoleSelectScreen(onClient: () -> Unit, onLawyer: () -> Unit) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text("WakiliMatch", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Navy)
+            Text("WakiliMatch", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Text(
                 "How can we help you today?",
                 fontSize = 13.sp,
-                color = Slate,
+                color = TextSecondary,
                 modifier = Modifier.padding(top = 6.dp, bottom = 28.dp),
             )
             PrimaryButton(text = "I need a lawyer", onClick = onClient)

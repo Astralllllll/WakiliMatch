@@ -43,18 +43,18 @@ fun LawyerMyCasesScreen(
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             val s = split
             if (s == null) {
-                Text("Loading…", fontSize = 13.sp, color = Slate)
+                Text("Loading…", fontSize = 13.sp, color = TextSecondary)
             } else {
-                Text("ONGOING (${s.ongoing.size})", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate, modifier = Modifier.padding(bottom = 6.dp))
+                Text("ONGOING (${s.ongoing.size})", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary, modifier = Modifier.padding(bottom = 6.dp))
                 if (s.ongoing.isEmpty()) {
-                    Text("No ongoing cases yet.", fontSize = 12.sp, color = Slate, modifier = Modifier.padding(bottom = 16.dp))
+                    Text("No ongoing cases yet.", fontSize = 12.sp, color = TextSecondary, modifier = Modifier.padding(bottom = 16.dp))
                 } else {
                     s.ongoing.forEach { c -> CaseRow(c, onClick = { onOpenCase(c) }) }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
-                Text("COMPLETED (${s.completed.size})", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate, modifier = Modifier.padding(bottom = 6.dp))
+                Text("COMPLETED (${s.completed.size})", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary, modifier = Modifier.padding(bottom = 6.dp))
                 if (s.completed.isEmpty()) {
-                    Text("Cases you finish will appear here with client ratings.", fontSize = 12.sp, color = Slate)
+                    Text("Cases you finish will appear here with client ratings.", fontSize = 12.sp, color = TextSecondary)
                 } else {
                     s.completed.forEach { c -> CaseRow(c, onClick = null) }
                 }
@@ -68,18 +68,18 @@ private fun CaseRow(c: LawyerCaseView, onClick: (() -> Unit)?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(12.dp)
             .padding(bottom = 8.dp),
     ) {
-        Text(c.issue_title ?: "Untitled case", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Navy)
+        Text(c.issue_title ?: "Untitled case", fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
         Text(
             listOfNotNull(c.legal_category, c.client_display_name?.let { "Client: $it" }).joinToString(" · "),
-            fontSize = 10.5.sp, color = Slate, modifier = Modifier.padding(top = 2.dp),
+            fontSize = 10.5.sp, color = TextSecondary, modifier = Modifier.padding(top = 2.dp),
         )
         if (c.rating != null) {
-            Text("Rating: ${c.rating}★ (${c.review_count ?: 0} reviews)", fontSize = 10.5.sp, color = GoldText, modifier = Modifier.padding(top = 2.dp))
+            Text("Rating: ${c.rating}★ (${c.review_count ?: 0} reviews)", fontSize = 10.5.sp, color = PrimaryLight, modifier = Modifier.padding(top = 2.dp))
         }
     }
     Spacer(modifier = Modifier.height(8.dp))

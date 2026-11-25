@@ -2,6 +2,7 @@ package com.wakilimatch.app.ui.nav
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -272,7 +273,9 @@ fun AppNavGraph(apiService: ApiService, appState: AppState) {
     }
     SnackbarHost(
         hostState = snackbarHostState,
-        modifier = androidx.compose.ui.Modifier.align(androidx.compose.ui.Alignment.BottomCenter),
+        modifier = androidx.compose.ui.Modifier
+            .align(androidx.compose.ui.Alignment.BottomCenter)
+            .navigationBarsPadding(),
     ) { data -> WakiliSnackbar(data) }
     }
 }

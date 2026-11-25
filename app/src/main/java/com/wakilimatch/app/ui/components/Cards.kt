@@ -14,19 +14,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wakilimatch.app.ui.theme.*
 
-/** Light-blue info box, e.g. "YOUR CASE" summary (brief section B2). */
+/** Surface info box, e.g. "YOUR CASE" summary (brief section B2). */
 @Composable
 fun SummaryBox(title: String?, body: String, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Ice, RoundedCornerShape(10.dp))
+            .background(SurfaceRaised, RoundedCornerShape(10.dp))
             .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
         if (title != null) {
-            Text(title, fontSize = 11.5.sp, fontWeight = FontWeight.Bold, color = Navy, modifier = Modifier.padding(bottom = 2.dp))
+            Text(title, fontSize = 11.5.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.padding(bottom = 2.dp))
         }
-        Text(body, fontSize = 10.5.sp, color = Slate, lineHeight = 15.sp)
+        Text(body, fontSize = 10.5.sp, color = TextSecondary, lineHeight = 15.sp)
     }
 }
 
@@ -42,12 +42,12 @@ fun StatTriplet(stats: List<Stat>, modifier: Modifier = Modifier) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(8.dp))
+                    .border(BorderStroke(1.dp, Border), RoundedCornerShape(8.dp))
                     .padding(vertical = 8.dp),
                 horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
             ) {
-                Text(stat.value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Navy)
-                Text(stat.label, fontSize = 9.sp, color = Slate)
+                Text(stat.value, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
+                Text(stat.label, fontSize = 9.sp, color = TextSecondary)
             }
         }
     }
@@ -59,9 +59,9 @@ enum class Outcome { WON, SETTLED, ONGOING, LOST, WITHDRAWN }
 fun ResultTag(outcome: Outcome?, modifier: Modifier = Modifier) {
     if (outcome == null) return
     val (bg, fg) = when (outcome) {
-        Outcome.WON -> Navy to White
-        Outcome.SETTLED -> Ice to Navy
-        else -> White to Slate
+        Outcome.WON -> Success to TextPrimary
+        Outcome.SETTLED -> SurfaceRaised to TextPrimary
+        else -> Background to TextSecondary
     }
     Text(
         text = outcome.name,
@@ -70,7 +70,7 @@ fun ResultTag(outcome: Outcome?, modifier: Modifier = Modifier) {
         fontWeight = FontWeight.Bold,
         modifier = modifier
             .background(bg, RoundedCornerShape(4.dp))
-            .border(BorderStroke(1.dp, if (outcome == Outcome.WON) Navy else BorderColor), RoundedCornerShape(4.dp))
+            .border(BorderStroke(1.dp, if (outcome == Outcome.WON) Success else Border), RoundedCornerShape(4.dp))
             .padding(horizontal = 6.dp, vertical = 2.dp),
     )
 }
@@ -80,15 +80,15 @@ fun HistoryItem(title: String, detail: String?, outcome: Outcome?, modifier: Mod
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .border(BorderStroke(0.dp, BorderColor))
+            .border(BorderStroke(0.dp, Border))
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = androidx.compose.ui.Alignment.Top,
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Navy)
+            Text(title, fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             if (detail != null) {
-                Text(detail, fontSize = 9.5.sp, color = Slate, modifier = Modifier.padding(top = 1.dp))
+                Text(detail, fontSize = 9.5.sp, color = TextSecondary, modifier = Modifier.padding(top = 1.dp))
             }
         }
         ResultTag(outcome)
@@ -111,34 +111,34 @@ fun InquiryCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(12.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Navy, modifier = Modifier.weight(1f))
+            Text(title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.weight(1f))
             if (scorePct != null) {
-                Text("$scorePct%", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = GoldText)
+                Text("$scorePct%", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = PrimaryLight)
             }
         }
         if (meta != null) {
-            Text(meta, fontSize = 9.5.sp, color = Slate, modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
+            Text(meta, fontSize = 9.5.sp, color = TextSecondary, modifier = Modifier.padding(top = 2.dp, bottom = 6.dp))
         }
         if (summary != null) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Ice, RoundedCornerShape(6.dp))
+                    .background(SurfaceRaised, RoundedCornerShape(6.dp))
                     .padding(horizontal = 8.dp, vertical = 6.dp),
             ) {
                 Text(
                     if (isAiGenerated) "✦ AI SUMMARY" else "DRAFT SUMMARY",
                     fontSize = 8.5.sp,
                     fontWeight = FontWeight.Bold,
-                    color = GoldText,
+                    color = PrimaryLight,
                     modifier = Modifier.padding(bottom = 2.dp),
                 )
-                Text(summary, fontSize = 10.sp, color = Body, lineHeight = 14.sp)
+                Text(summary, fontSize = 10.sp, color = TextPrimary, lineHeight = 14.sp)
             }
         }
     }

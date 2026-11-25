@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors ui/theme/Color.kt's Background token - used where Compose
+         colors aren't reachable (manifest theme, adaptive icon XML). -->
+    <color name="background">#0B0B0C</color>
+</resources>

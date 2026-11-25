@@ -10,8 +10,8 @@ import com.wakilimatch.app.data.User
 import com.wakilimatch.app.ui.components.AppScreen
 import com.wakilimatch.app.ui.components.Tile
 import com.wakilimatch.app.ui.components.TitleBar
-import com.wakilimatch.app.ui.theme.Navy
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.TextPrimary
+import com.wakilimatch.app.ui.theme.TextSecondary
 
 @Composable
 fun ClientDashboardScreen(
@@ -23,12 +23,12 @@ fun ClientDashboardScreen(
     AppScreen {
         TitleBar(title = "Client Dashboard")
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-            Text("Good to see you", fontSize = 12.sp, color = Slate)
+            Text("Good to see you", fontSize = 12.sp, color = TextSecondary)
             Text(
                 currentUser.fullName ?: currentUser.email,
                 fontSize = 16.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                color = Navy,
+                color = TextPrimary,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
 

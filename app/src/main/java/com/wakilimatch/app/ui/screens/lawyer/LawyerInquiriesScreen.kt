@@ -15,7 +15,7 @@ import com.wakilimatch.app.ui.components.AIBadge
 import com.wakilimatch.app.ui.components.AppScreen
 import com.wakilimatch.app.ui.components.InquiryCard
 import com.wakilimatch.app.ui.components.TitleBar
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.TextSecondary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -42,18 +42,18 @@ fun LawyerInquiriesScreen(
         Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             val s = split
             if (s == null) {
-                Text("Loading…", fontSize = 13.sp, color = Slate)
+                Text("Loading…", fontSize = 13.sp, color = TextSecondary)
             } else if (s.inquiriesCount == 0) {
                 Text(
                     "No new inquiries right now. You'll appear here once a client's case matches your profile.",
-                    fontSize = 12.sp, color = Slate,
+                    fontSize = 12.sp, color = TextSecondary,
                 )
             } else {
                 Row(modifier = Modifier.padding(bottom = 10.dp)) {
-                    Text("${s.inquiriesCount} new inquiries", fontSize = 11.sp, color = Slate)
+                    Text("${s.inquiriesCount} new inquiries", fontSize = 11.sp, color = TextSecondary)
                     if (s.needsDecision.any { it.ai_summary != null }) {
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("·", fontSize = 11.sp, color = Slate)
+                        Text("·", fontSize = 11.sp, color = TextSecondary)
                         Spacer(modifier = Modifier.width(6.dp))
                         AIBadge(text = "AI summaries ready", soft = true)
                     }

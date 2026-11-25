@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.sp
 import com.wakilimatch.app.data.DraftCaseResponse
 import com.wakilimatch.app.data.LEGAL_CATEGORIES
 import com.wakilimatch.app.ui.components.*
-import com.wakilimatch.app.ui.theme.BorderStrong
-import com.wakilimatch.app.ui.theme.Ice
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.Border
+import com.wakilimatch.app.ui.theme.SurfaceRaised
+import com.wakilimatch.app.ui.theme.TextSecondary
 
 /**
  * Scan Document (brief sections B3/B6). No real OCR exists, so this never
@@ -54,13 +54,13 @@ fun ScanDocumentScreen(onBack: () -> Unit, onUseInfo: (DraftCaseResponse) -> Uni
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(140.dp)
-                    .background(Ice, RoundedCornerShape(10.dp))
-                    .border(BorderStroke(2.dp, BorderStrong), RoundedCornerShape(10.dp)),
+                    .background(SurfaceRaised, RoundedCornerShape(10.dp))
+                    .border(BorderStroke(2.dp, Border), RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text("📷", fontSize = 26.sp)
-                    Text(pickedFileName ?: "Choose a file from your gallery", fontSize = 11.sp, color = Slate, modifier = Modifier.padding(top = 6.dp))
+                    Text(pickedFileName ?: "Choose a file from your gallery", fontSize = 11.sp, color = TextSecondary, modifier = Modifier.padding(top = 6.dp))
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -74,7 +74,7 @@ fun ScanDocumentScreen(onBack: () -> Unit, onUseInfo: (DraftCaseResponse) -> Uni
                 Spacer(modifier = Modifier.height(6.dp))
                 Field(label = "") { AppTextField(value = parties, onValueChange = { parties = it }, placeholder = "Parties, e.g. Landlord vs tenant") }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Suggested category", fontSize = 10.5.sp, color = Slate, modifier = Modifier.padding(bottom = 4.dp))
+                Text("Suggested category", fontSize = 10.5.sp, color = TextSecondary, modifier = Modifier.padding(bottom = 4.dp))
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     items(LEGAL_CATEGORIES) { c ->
                         Pill(label = c.label, active = category == c.value, onClick = { category = c.value })
@@ -86,7 +86,7 @@ fun ScanDocumentScreen(onBack: () -> Unit, onUseInfo: (DraftCaseResponse) -> Uni
                 "This demo does not upload or scan your document — the fields above are a sample for " +
                     "you to edit. Nothing is stored. (Kenya Data Protection Act, 2019.)",
                 fontSize = 10.5.sp,
-                color = Slate,
+                color = TextSecondary,
                 modifier = Modifier.padding(bottom = 16.dp),
             )
             } // end scrollable content column

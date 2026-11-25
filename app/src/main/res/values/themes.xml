@@ -1,3 +1,18 @@
-<resources>
-    <style name="Theme.WakiliMatch" parent="android:Theme.Material.Light.NoActionBar" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.WakiliMatch" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:statusBarColor">@color/background</item>
+        <item name="android:navigationBarColor">@color/background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+    </style>
+
+    <!-- Shown by androidx.core.splashscreen while the app cold-starts;
+         MainActivity switches to Theme.WakiliMatch via postSplashScreenTheme
+         as soon as the first frame is ready. -->
+    <style name="Theme.WakiliMatch.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo_wakilimatch</item>
+        <item name="postSplashScreenTheme">@style/Theme.WakiliMatch</item>
+    </style>
 </resources>

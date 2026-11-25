@@ -14,8 +14,8 @@ import com.wakilimatch.app.data.AssistantState
 import com.wakilimatch.app.data.AssistantTurnRequest
 import com.wakilimatch.app.data.DraftCaseResponse
 import com.wakilimatch.app.ui.components.*
-import com.wakilimatch.app.ui.theme.ErrorRed
-import com.wakilimatch.app.ui.theme.Navy
+import com.wakilimatch.app.ui.theme.Error
+import com.wakilimatch.app.ui.theme.PrimaryLight
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -91,7 +91,7 @@ fun AiAssistantScreen(
             }
 
             if (error != null) {
-                Text(error!!, color = ErrorRed, fontSize = 12.sp, modifier = Modifier.padding(vertical = 6.dp))
+                Text(error!!, color = Error, fontSize = 12.sp, modifier = Modifier.padding(vertical = 6.dp))
             }
 
             if (draft == null) {
@@ -103,7 +103,7 @@ fun AiAssistantScreen(
                         modifier = Modifier.weight(1f),
                     )
                     TextButton(onClick = { send() }, enabled = !sending && input.isNotBlank()) {
-                        Text("Send", color = Navy)
+                        Text("Send", color = PrimaryLight)
                     }
                 }
                 TextButton(onClick = onSkipManual, modifier = Modifier.fillMaxWidth()) {

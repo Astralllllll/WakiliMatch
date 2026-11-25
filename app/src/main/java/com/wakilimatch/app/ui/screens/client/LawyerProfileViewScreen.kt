@@ -62,19 +62,19 @@ fun LawyerProfileViewScreen(
             ) {
             Box(
                 modifier = Modifier.size(60.dp).align(Alignment.CenterHorizontally)
-                    .background(Navy, CircleShape)
+                    .background(Primary, CircleShape)
                     .clearAndSetSemantics {},
                 contentAlignment = Alignment.Center,
             ) {
-                Text(initialsFor(match.full_name), color = White, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                Text(initialsFor(match.full_name), color = TextOnPrimary, fontWeight = FontWeight.Bold, fontSize = 15.sp)
             }
             Text(
                 match.full_name ?: "Advocate",
-                fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Navy,
+                fontSize = 15.sp, fontWeight = FontWeight.Bold, color = TextPrimary,
                 modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 8.dp),
             )
             match.lsk_registration_number?.let {
-                Text("LSK #$it", fontSize = 12.sp, color = Slate, modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 2.dp, bottom = 8.dp))
+                Text("LSK #$it", fontSize = 12.sp, color = TextSecondary, modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 2.dp, bottom = 8.dp))
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 8.dp)) {
@@ -84,8 +84,8 @@ fun LawyerProfileViewScreen(
 
             StatTriplet(stats, modifier = Modifier.padding(vertical = 8.dp))
 
-            Text("ABOUT", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate)
-            Text(match.biography ?: "No biography provided.", fontSize = 12.5.sp, color = Body, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+            Text("ABOUT", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+            Text(match.biography ?: "No biography provided.", fontSize = 12.5.sp, color = TextPrimary, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 InfoColumn("QUALIFICATIONS", match.academic_qualifications, Modifier.weight(1f))
@@ -96,11 +96,11 @@ fun LawyerProfileViewScreen(
                 InfoColumn("FEE GUIDANCE", match.price_guidance, Modifier.weight(1f))
             }
 
-            Text("CASE HISTORY", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Slate)
+            Text("CASE HISTORY", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
             when {
-                pastCasesError -> Text("Case history is unavailable right now.", fontSize = 11.sp, color = Slate, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
-                pastCases == null -> Text("Loading case history…", fontSize = 11.sp, color = Slate, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
-                pastCases!!.isEmpty() -> Text("No case history recorded yet.", fontSize = 11.sp, color = Slate, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+                pastCasesError -> Text("Case history is unavailable right now.", fontSize = 11.sp, color = TextSecondary, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+                pastCases == null -> Text("Loading case history…", fontSize = 11.sp, color = TextSecondary, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
+                pastCases!!.isEmpty() -> Text("No case history recorded yet.", fontSize = 11.sp, color = TextSecondary, modifier = Modifier.padding(top = 4.dp, bottom = 12.dp))
                 else -> Column(modifier = Modifier.padding(bottom = 12.dp)) {
                     pastCases!!.forEach { c ->
                         HistoryItem(
@@ -116,7 +116,7 @@ fun LawyerProfileViewScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             SummaryBox(title = "Select ${match.full_name ?: "this lawyer"}", body = "They will receive your full case details and contact you within 24 hrs.")
-            if (confirmError != null) Text(confirmError!!, fontSize = 12.sp, color = ErrorRed, modifier = Modifier.padding(top = 6.dp))
+            if (confirmError != null) Text(confirmError!!, fontSize = 12.sp, color = Error, modifier = Modifier.padding(top = 6.dp))
 
             PrimaryButton(
                 text = if (confirming) "Confirming…" else "Confirm selection",
@@ -155,8 +155,8 @@ fun LawyerProfileViewScreen(
 @Composable
 private fun InfoColumn(label: String, value: String?, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
-        Text(label, fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate)
-        Text(value ?: "—", fontSize = 12.sp, color = Navy, modifier = Modifier.padding(top = 2.dp))
+        Text(label, fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+        Text(value ?: "—", fontSize = 12.sp, color = TextPrimary, modifier = Modifier.padding(top = 2.dp))
     }
 }
 

@@ -16,9 +16,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.wakilimatch.app.data.*
 import com.wakilimatch.app.ui.components.*
-import com.wakilimatch.app.ui.theme.ErrorRed
-import com.wakilimatch.app.ui.theme.Navy
-import com.wakilimatch.app.ui.theme.Slate
+import com.wakilimatch.app.ui.theme.Error
+import com.wakilimatch.app.ui.theme.TextPrimary
+import com.wakilimatch.app.ui.theme.TextSecondary
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -180,7 +180,7 @@ fun LawyerOnboardingScreen(
 
         if (initialLoading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                Text("Loading…", fontSize = 13.sp, color = Slate)
+                Text("Loading…", fontSize = 13.sp, color = TextSecondary)
             }
             return@AppScreen
         }
@@ -194,7 +194,7 @@ fun LawyerOnboardingScreen(
         ) {
             Text(
                 "Detailed profiles improve match quality — clients find you based on your specialisations and case experience.",
-                fontSize = 12.sp, color = Slate,
+                fontSize = 12.sp, color = TextSecondary,
             )
 
             Field(label = "Biography *", error = errors["biography"]) {
@@ -205,7 +205,7 @@ fun LawyerOnboardingScreen(
                 )
                 Text(
                     "${biography.length} / $BIOGRAPHY_MAX chars",
-                    fontSize = 11.sp, color = Slate,
+                    fontSize = 11.sp, color = TextSecondary,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -258,13 +258,13 @@ fun LawyerOnboardingScreen(
             }
 
             Field(label = "LSK registration number") {
-                Text(currentUser.lskNumber ?: "—", fontSize = 13.sp, color = Navy, fontWeight = FontWeight.SemiBold)
+                Text(currentUser.lskNumber ?: "—", fontSize = 13.sp, color = TextPrimary, fontWeight = FontWeight.SemiBold)
             }
 
             // ── Past case history (optional) ──────────────────────────────
-            Text("Case history (optional)", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Navy)
+            Text("Case history (optional)", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = TextPrimary)
             pastCases.forEach { c ->
-                Text("${c.case_type} — ${c.jurisdiction}, ${c.case_year}", fontSize = 12.sp, color = Slate)
+                Text("${c.case_type} — ${c.jurisdiction}, ${c.case_year}", fontSize = 12.sp, color = TextSecondary)
             }
 
             Field(label = "Case type") {
@@ -298,13 +298,13 @@ fun LawyerOnboardingScreen(
             OutlineButton(text = "+ Add case", onClick = ::addPastCase)
 
             if (submitError != null) {
-                Text(submitError!!, color = ErrorRed, fontSize = 12.sp)
+                Text(submitError!!, color = Error, fontSize = 12.sp)
             }
 
             if (!success) {
                 PrimaryButton(text = "Save profile", onClick = ::submit, loading = loading)
             } else {
-                Text("✓ Profile saved successfully.", fontSize = 12.sp, color = Navy)
+                Text("✓ Profile saved successfully.", fontSize = 12.sp, color = TextPrimary)
                 PrimaryButton(text = "Continue", onClick = onComplete)
             }
 

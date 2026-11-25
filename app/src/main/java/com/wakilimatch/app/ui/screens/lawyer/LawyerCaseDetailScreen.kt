@@ -62,18 +62,18 @@ fun LawyerCaseDetailScreen(
                     .weight(1f)
                     .verticalScroll(rememberScrollState()),
             ) {
-            Text(caseView.issue_title ?: "Untitled case", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Navy)
+            Text(caseView.issue_title ?: "Untitled case", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = TextPrimary)
             Spacer(modifier = Modifier.height(6.dp))
-            Text("Category: ${caseView.legal_category ?: "—"}", fontSize = 12.sp, color = Slate)
+            Text("Category: ${caseView.legal_category ?: "—"}", fontSize = 12.sp, color = TextSecondary)
             if (caseView.details_confirmed) {
-                Text("Jurisdiction: ${caseView.jurisdiction ?: "—"}", fontSize = 12.sp, color = Slate)
-                Text("Urgency: ${caseView.urgency_level ?: "—"}", fontSize = 12.sp, color = Slate)
+                Text("Jurisdiction: ${caseView.jurisdiction ?: "—"}", fontSize = 12.sp, color = TextSecondary)
+                Text("Urgency: ${caseView.urgency_level ?: "—"}", fontSize = 12.sp, color = TextSecondary)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
-            Text("CASE DETAILS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate)
+            Text("CASE DETAILS", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
             if (caseView.details_confirmed) {
-                Text(caseView.issue_description ?: "No description provided.", fontSize = 13.sp, color = Body, modifier = Modifier.padding(top = 6.dp))
+                Text(caseView.issue_description ?: "No description provided.", fontSize = 13.sp, color = TextPrimary, modifier = Modifier.padding(top = 6.dp))
             } else {
                 SummaryBox(
                     title = null,
@@ -85,12 +85,12 @@ fun LawyerCaseDetailScreen(
 
             if (caseView.details_confirmed) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text("CLIENT CONTACT", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = Slate)
-                Text("Name: ${caseView.client_display_name ?: "—"}", fontSize = 12.sp, color = Body, modifier = Modifier.padding(top = 4.dp))
-                Text("Email: ${caseView.client_email ?: "—"}", fontSize = 12.sp, color = Body)
+                Text("CLIENT CONTACT", fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = TextSecondary)
+                Text("Name: ${caseView.client_display_name ?: "—"}", fontSize = 12.sp, color = TextPrimary, modifier = Modifier.padding(top = 4.dp))
+                Text("Email: ${caseView.client_email ?: "—"}", fontSize = 12.sp, color = TextPrimary)
             }
 
-            if (error != null) Text(error!!, fontSize = 12.sp, color = ErrorRed, modifier = Modifier.padding(top = 10.dp))
+            if (error != null) Text(error!!, fontSize = 12.sp, color = Error, modifier = Modifier.padding(top = 10.dp))
             } // end scrollable content column
 
             Spacer(modifier = Modifier.height(12.dp))

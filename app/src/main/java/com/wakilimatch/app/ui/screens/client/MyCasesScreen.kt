@@ -45,9 +45,9 @@ fun MyCasesScreen(apiService: ApiService, currentUser: User, onBack: () -> Unit)
         TitleBar(title = "My Cases", onBack = onBack)
         Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
             when {
-                loading -> Text("Loading your cases…", fontSize = 13.sp, color = Slate)
-                error != null -> Text(error!!, fontSize = 12.sp, color = ErrorRed)
-                issues.isEmpty() -> Text("You have not posted any case details yet.", fontSize = 13.sp, color = Slate)
+                loading -> Text("Loading your cases…", fontSize = 13.sp, color = TextSecondary)
+                error != null -> Text(error!!, fontSize = 12.sp, color = Error)
+                issues.isEmpty() -> Text("You have not posted any case details yet.", fontSize = 13.sp, color = TextSecondary)
                 else -> LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(issues) { issue -> CaseRow(issue) }
                 }
@@ -61,17 +61,17 @@ private fun CaseRow(issue: Issue) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(BorderStroke(1.dp, BorderColor), RoundedCornerShape(10.dp))
+            .border(BorderStroke(1.dp, Border), RoundedCornerShape(10.dp))
             .padding(14.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.Top) {
-            Text(issue.issue_title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Navy, modifier = Modifier.weight(1f))
-            Text((issue.match_status ?: "pending").uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = GoldText)
+            Text(issue.issue_title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = TextPrimary, modifier = Modifier.weight(1f))
+            Text((issue.match_status ?: "pending").uppercase(), fontSize = 10.sp, fontWeight = FontWeight.Bold, color = PrimaryLight)
         }
-        Text(issue.issue_description, fontSize = 12.sp, color = Body, modifier = Modifier.padding(top = 8.dp), maxLines = 3)
+        Text(issue.issue_description, fontSize = 12.sp, color = TextPrimary, modifier = Modifier.padding(top = 8.dp), maxLines = 3)
         Row(modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Text("Category: ${issue.legal_category ?: "—"}", fontSize = 11.sp, color = Slate)
-            if (issue.lawyer_name != null) Text("Lawyer: ${issue.lawyer_name}", fontSize = 11.sp, color = Slate)
+            Text("Category: ${issue.legal_category ?: "—"}", fontSize = 11.sp, color = TextSecondary)
+            if (issue.lawyer_name != null) Text("Lawyer: ${issue.lawyer_name}", fontSize = 11.sp, color = TextSecondary)
         }
     }
 }

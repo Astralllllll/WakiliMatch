@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -26,7 +25,8 @@ import com.wakilimatch.app.ui.theme.*
 
 /** Dashboard tile with an optional count badge (brief section B2). dim=true
  * means "not wired in this demo" - shown as "Coming soon", never a dead
- * link that pretends to work. */
+ * link that pretends to work. dark=true is the one emphasized tile in a
+ * row (e.g. "Log out") - raised a shade above the rest, not a primary CTA. */
 @Composable
 fun Tile(
     label: String,
@@ -36,9 +36,9 @@ fun Tile(
     dim: Boolean = false,
     onClick: () -> Unit = {},
 ) {
-    val bg = if (dark) Navy else White
-    val fg = if (dark) White else if (dim) Slate else Navy
-    val border = if (dark) Navy else BorderStrong
+    val bg = if (dark) SurfaceRaised else Surface
+    val fg = if (dim) TextSecondary else TextPrimary
+    val border = Border
 
     val a11yLabel = buildString {
         append(label)
@@ -63,7 +63,7 @@ fun Tile(
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(label, color = fg, fontWeight = FontWeight.Bold, fontSize = 11.5.sp, textAlign = TextAlign.Center)
             if (dim) {
-                Text("Coming soon", color = Slate, fontSize = 8.5.sp, modifier = Modifier.padding(top = 2.dp))
+                Text("Coming soon", color = TextSecondary, fontSize = 8.5.sp, modifier = Modifier.padding(top = 2.dp))
             }
         }
         if (badgeCount != null && badgeCount > 0) {
@@ -72,10 +72,10 @@ fun Tile(
                     .align(Alignment.TopEnd)
                     .offset(x = 6.dp, y = (-6).dp)
                     .size(18.dp)
-                    .background(Navy, CircleShape),
+                    .background(Primary, CircleShape),
                 contentAlignment = Alignment.Center,
             ) {
-                Text("$badgeCount", color = White, fontSize = 9.5.sp, fontWeight = FontWeight.Bold)
+                Text("$badgeCount", color = TextOnPrimary, fontSize = 9.5.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -98,20 +98,20 @@ fun StepDots(current: Int, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(20.dp)
-                    .background(if (done) Navy else White, CircleShape)
-                    .border(BorderStroke(1.5.dp, if (done) Navy else if (now) Gold else BorderStrong), CircleShape)
+                    .background(if (done) Primary else Surface, CircleShape)
+                    .border(BorderStroke(1.5.dp, if (done) Primary else if (now) PrimaryLight else Border), CircleShape)
                     .clearAndSetSemantics {},
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = if (done) "✓" else "$n",
-                    color = if (done) White else if (now) GoldText else Slate,
+                    color = if (done) TextOnPrimary else if (now) PrimaryLight else TextSecondary,
                     fontSize = 9.5.sp,
                     fontWeight = FontWeight.Bold,
                 )
             }
             if (n < 4) {
-                Box(modifier = Modifier.width(16.dp).height(1.dp).background(BorderStrong))
+                Box(modifier = Modifier.width(16.dp).height(1.dp).background(Border))
             }
         }
     }
