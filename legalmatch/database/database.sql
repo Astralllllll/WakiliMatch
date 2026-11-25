@@ -50,6 +50,7 @@ CREATE TABLE LawyerProfiles (
     specializations          TEXT,
     years_of_experience      INT           DEFAULT 0 CHECK (years_of_experience >= 0),
     firm_name                VARCHAR(255),
+    county                   VARCHAR(100), -- lawyer's own practice county (Android onboarding, Deliverable 4 bug 1)
 
     -- Self-reported summary fields collected once at onboarding. Distinct
     -- from PastCases below, which holds the structured, per-case records

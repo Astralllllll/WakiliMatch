@@ -629,6 +629,11 @@ router.post('/generate', async (req, res) => {
       FROM LawyerProfiles lp
       LEFT JOIN PastCases pc ON pc.lawyer_id = lp.user_id
       WHERE lp.is_verified = true
+        -- Deliverable 4, bug 1: a lawyer with no description or no practice
+        -- area is excluded from matching, regardless of verification status
+        -- (LawyerOwnProfileScreen/LawyerDashboard show a banner instead).
+        AND lp.biography IS NOT NULL AND lp.biography <> ''
+        AND lp.specializations IS NOT NULL AND lp.specializations <> ''
       GROUP BY lp.profile_id, lp.user_id
     `);
 
