@@ -4,27 +4,32 @@ Date: 2026-11-25
 Scope: static audit only, per the working method in the brief. No code changes
 in this phase.
 
-## 0. CONFLICTS TO RESOLVE BEFORE LATER PHASES (read this first)
-
-1. **`docs/wireframes/wireframe-flow.html` does not exist anywhere in this
-   repo.** Searched the full working tree (recursive, case-insensitive, outside
-   `node_modules`/`.venv`/`.git`) — zero results, no `docs/wireframes/` folder
-   at all. The brief calls this file "the visual and flow spec" and says to
-   "read it fully" before Part B. I cannot do that.
-   However, the brief's own §B2-B6 text already specifies: exact hex tokens,
-   the full reusable-component list, the exact screen inventory (§B3), the XAI
-   card's required fields and states (§B4), and the AI-provider interface
-   (§B6). So Phase 3/4 (UI build) is **not fully blocked** — I can build from
-   that text spec plus ordinary mobile-UI judgment. What I *can't* do without
-   the file: verify acceptance criterion (e) ("screens visually match the
-   wireframe at 390x844"), or resolve details the text spec leaves open
-   (exact spacing/arrangement within a tile grid, chat bubble visual
-   treatment, icon choices, which "Coming soon" tiles appear where). Decide:
-   (a) add the HTML file so I build to it pixel-for-pixel, or (b) I design the
-   undefined details myself from the token/component spec and flag each
-   judgment call in the Phase 3 summary for your review. I'd recommend (a) if
-   the file exists somewhere outside this repo — flagging rather than
-   guessing, per the working method.
+1. **RESOLVED mid-audit: the wireframe file exists, but wasn't where the brief
+   says and wasn't present when I started.** I searched the full working tree
+   for it early in this phase (recursive, case-insensitive, outside
+   `node_modules`/`.venv`/`.git`) and found nothing. Partway through writing
+   this audit, `app/LegalMatchingPlatform Wireframe Flow.html` appeared in the
+   working tree (most likely a OneDrive sync delivering a file you added from
+   elsewhere) — it is an interactive clickable prototype whose colour
+   variables, screen IDs, and component class names (`tile`, `pill`,
+   `step-dot`, `tag.top`/`tag.limited`, `ai-badge`, `bubble.ai/me/draft`,
+   `case-card`, `inquiry-card`, etc.) match §B2/§B3 exactly — this is
+   unambiguously the file the brief means. I've read it in full, moved it to
+   the path the brief names (`git mv` → `docs/wireframes/wireframe-flow.html`),
+   and it is now committed there. **This conflict is resolved** — Part B can
+   proceed without needing you to supply anything further.
+   One side note: it got included in my first audit commit (`efe2572`)
+   unintentionally — I had only staged `docs/UI_AUDIT.md`, but the file was
+   already present and staged in the working tree by the time `git commit`
+   ran. Flagging this so you're aware a file you didn't explicitly ask me to
+   commit ended up in history; nothing in it looks sensitive (it's the
+   wireframe prototype itself), so I left it rather than rewriting history.
+   The wireframe also confirms the §B4 anti-fabrication warning is real and
+   specific: its mock data (`94%` match score, `127 CASES`, `4.8★ RATING`,
+   `7 similar cases, 5 won`, badge counts `2`/`3`/`3` on dashboard tiles) is
+   exactly the kind of placeholder the brief says must never appear unless
+   backed by real data — none of it exists in the schema today (see §3/§4),
+   so all of it must be omitted from the real build, not approximated.
 
 2. **`docs/AI_AUDIT.md` is a byte-identical copy of `docs/AUDIT.md`** (both
    dated 2026-11-17, both titled "Phase 1 Audit", both covering the
@@ -154,10 +159,10 @@ with.
 
 ## 6. What's next
 
-This audit is complete; no code was changed. Waiting on:
-1. Your decision on the missing wireframe file (§0.1) — supply it, or give
-   the go-ahead for me to make the undefined visual judgment calls myself.
-2. Approval of the two additive migrations proposed in §3.
-3. Your call on the TF-IDF-fallback XAI shape (§5).
+This audit is complete. The only code-tree change made was relocating the
+wireframe file to its expected path (§0.1) — no application code was
+touched. Waiting on:
+1. Approval of the two additive migrations proposed in §3.
+2. Your call on the TF-IDF-fallback XAI shape (§5).
 
 Once those are settled I'll start Phase 2 (engine additions A1-A6).
