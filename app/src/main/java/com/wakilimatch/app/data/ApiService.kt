@@ -75,8 +75,10 @@ interface ApiService {
     @GET("api/ai/status")
     suspend fun getAiStatus(): AiStatusResponse
 
-    @POST("api/ai/draft-case")
-    suspend fun draftCase(@Body body: DraftCaseRequest): Response<DraftCaseResponse>
+    // Deliverable 4, section 5 - the adaptive assistant turn-by-turn endpoint
+    // (replaces the old fixed-script api/ai/draft-case).
+    @POST("api/ai/assistant-turn")
+    suspend fun assistantTurn(@Body body: AssistantTurnRequest): Response<AssistantTurnResponse>
 
     companion object {
         fun create(): ApiService {

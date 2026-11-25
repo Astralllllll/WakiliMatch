@@ -296,7 +296,27 @@ data class AddPastCaseResponse(
 
 data class AiStatusResponse(val provider: String)
 
-data class DraftCaseRequest(val answers: Map<String, String>)
+// ─── Adaptive AI Assistant (Deliverable 4, section 5) ───────────────────────
+// Mirrors services/assistantEngine.js's state shape exactly - the server is
+// stateless, so the client carries this across turns.
+
+data class AssistantState(
+    val facts: Map<String, String> = emptyMap(),
+    val askedSlots: Map<String, Int> = emptyMap(),
+    val turnsAsked: Int = 0,
+    val lastAskedSlot: String? = null,
+    val bankArea: String? = null,
+)
+
+data class AssistantTurnRequest(val state: AssistantState, val message: String)
+
+data class AssistantTurnResponse(
+    val reply: String? = null,
+    val state: AssistantState? = null,
+    val readyToDraft: Boolean = false,
+    val draft: DraftCaseResponse? = null,
+    val error: String? = null,
+)
 
 data class DraftCaseResponse(
     val title: String? = null,
